@@ -1,93 +1,107 @@
 /**
  * CineBook — Storage Module
- * Abstraction layer for localStorage persistence with safe defaults
+ * Centralized abstraction layer for LocalStorage persistence with defensive handling
  */
 
 const Storage = (function () {
+    'use strict';
+
     const PREFIX = 'cinebook_';
-    const KEYS = {
+    const KEYS = Object.freeze({
         MOVIES: 'movies',
         BOOKINGS: 'bookings',
         PROFILE: 'profile'
-    };
+    });
 
     /**
-     * Internal safe get
+     * Safe LocalStorage getter
+     * @param {string} key 
+     * @param {*} defaultValue 
+     * @returns {*}
      */
     function getItem(key, defaultValue = null) {
         try {
-            const item = localStorage.getItem(PREFIX + key);
-            return item ? JSON.parse(item) : defaultValue;
+            const raw = localStorage.getItem(PREFIX + key);
+            if (raw === null || raw === undefined) {
+                return defaultValue;
+            }
+            return JSON.parse(raw);
         } catch (error) {
-            console.error(`[Storage] Error reading key "${key}":`, error);
+            console.warn(`[Storage] Failed to read or parse key "${key}":`, error);
             return defaultValue;
         }
     }
 
     /**
-     * Internal safe set
+     * Safe LocalStorage setter
+     * @param {string} key 
+     * @param {*} value 
+     * @returns {boolean}
      */
     function setItem(key, value) {
         try {
             localStorage.setItem(PREFIX + key, JSON.stringify(value));
             return true;
         } catch (error) {
-            console.error(`[Storage] Error writing key "${key}":`, error);
+            console.error(`[Storage] Failed to write key "${key}":`, error);
             return false;
         }
     }
 
     return {
         /**
-         * Initialize storage with default data if empty
+         * Initialize storage defaults if empty
          */
         init: function () {
-            // Initialize Profile
             if (!getItem(KEYS.PROFILE)) {
                 setItem(KEYS.PROFILE, CineData.getDefaultProfile());
             }
 
-            // Initialize Bookings if none
             if (!getItem(KEYS.BOOKINGS)) {
                 setItem(KEYS.BOOKINGS, []);
             }
         },
 
-        // Profile API
+        // Profile Management API
         getProfile: function () {
             return getItem(KEYS.PROFILE, CineData.getDefaultProfile());
         },
         saveProfile: function (profile) {
+            if (!profile || typeof profile !== 'object') return false;
             return setItem(KEYS.PROFILE, profile);
         },
 
-        // Bookings API
+        // Bookings Management API
         getBookings: function () {
-            return getItem(KEYS.BOOKINGS, []);
+            const bookings = getItem(KEYS.BOOKINGS, []);
+            return Array.isArray(bookings) ? bookings : [];
+        },
+        getBookingById: function (bookingId) {
+            if (!bookingId) return null;
+            const bookings = this.getBookings();
+            return bookings.find(b => b.id === bookingId) || null;
         },
         addBooking: function (booking) {
-            const bookings = getItem(KEYS.BOOKINGS, []);
-            bookings.unshift(booking); // newest first
+            if (!booking || !booking.id) return null;
+            const bookings = this.getBookings();
+            bookings.unshift(booking); // Prepend so latest appears on top
             setItem(KEYS.BOOKINGS, bookings);
             return booking;
         },
         cancelBooking: function (bookingId) {
-            const bookings = getItem(KEYS.BOOKINGS, []);
-            const booking = bookings.find(b => b.id === bookingId);
-            if (booking) {
-                booking.status = 'Cancelled';
-                booking.cancelledAt = new Date().toISOString();
+            if (!bookingId) return false;
+            const bookings = this.getBookings();
+            const target = bookings.find(b => b.id === bookingId);
+            if (target && target.status !== 'Cancelled') {
+                target.status = 'Cancelled';
+                target.cancelledAt = new Date().toISOString();
                 setItem(KEYS.BOOKINGS, bookings);
                 return true;
             }
             return false;
         },
-        getBookingById: function (bookingId) {
-            const bookings = getItem(KEYS.BOOKINGS, []);
-            return bookings.find(b => b.id === bookingId) || null;
-        },
 
-        // Raw Storage helpers
+        // Raw low-level helpers
         get: getItem,
         set: setItem
     };

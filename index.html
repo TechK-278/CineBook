@@ -24,34 +24,34 @@
 
     <!-- Application Navigation -->
     <header>
-        <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-cinebook-nav border-bottom border-cinebook sticky-top py-2">
+        <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-cinebook-nav border-bottom border-cinebook sticky-top py-2" aria-label="Main Navigation">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center gap-2" href="#home" data-view="home">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#home" data-view="home" aria-label="CineBook Home">
                     <span class="brand-icon d-inline-flex align-items-center justify-content-center">
-                        <i class="bi bi-film text-cinebook-accent fs-4"></i>
+                        <i class="bi bi-film text-cinebook-accent fs-4" aria-hidden="true"></i>
                     </span>
                     <span class="fw-bold tracking-tight text-white">Cine<span class="text-cinebook-accent">Book</span></span>
                 </a>
 
                 <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <i class="bi bi-list fs-3 text-white"></i>
+                    <i class="bi bi-list fs-3 text-white" aria-hidden="true"></i>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-lg-1">
                         <li class="nav-item">
                             <a class="nav-link active" href="#home" data-view="home">
-                                <i class="bi bi-house-door me-1"></i> Home
+                                <i class="bi bi-house-door me-1" aria-hidden="true"></i> Home
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#movies" data-view="movies">
-                                <i class="bi bi-collection-play me-1"></i> Movies
+                                <i class="bi bi-collection-play me-1" aria-hidden="true"></i> Movies
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#bookings" data-view="bookings">
-                                <i class="bi bi-ticket-perforated me-1"></i> My Bookings
+                                <i class="bi bi-ticket-perforated me-1" aria-hidden="true"></i> My Bookings
                             </a>
                         </li>
                     </ul>
@@ -59,12 +59,12 @@
                     <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
                         <div class="input-group input-group-sm me-2 d-none d-md-flex" style="width: 220px;">
                             <span class="input-group-text bg-cinebook-surface border-cinebook text-cinebook-muted">
-                                <i class="bi bi-search"></i>
+                                <i class="bi bi-search" aria-hidden="true"></i>
                             </span>
-                            <input type="text" id="navbar-search-input" class="form-control form-control-sm border-cinebook" placeholder="Search movies...">
+                            <input type="text" id="navbar-search-input" class="form-control form-control-sm border-cinebook" placeholder="Search movies..." aria-label="Search movies in catalogue">
                         </div>
-                        <button class="btn btn-cinebook-surface btn-sm d-flex align-items-center gap-2 px-3 py-2" id="btn-profile" data-view="profile">
-                            <i class="bi bi-person-circle text-cinebook-accent"></i>
+                        <button type="button" class="btn btn-cinebook-surface btn-sm d-flex align-items-center gap-2 px-3 py-2" id="btn-profile" data-view="profile" aria-label="Open profile view">
+                            <i class="bi bi-person-circle text-cinebook-accent" aria-hidden="true"></i>
                             <span id="nav-profile-name" class="font-medium">Profile</span>
                         </button>
                     </div>
@@ -77,7 +77,7 @@
     <main id="app-root" class="app-viewport">
         
         <!-- 1. HOME VIEW -->
-        <section id="homeView" class="spa-view">
+        <section id="homeView" class="spa-view" aria-label="Home">
             <!-- Hero Section -->
             <div class="hero-wrapper py-5 py-lg-6">
                 <div class="container py-4">
@@ -85,7 +85,7 @@
                         <div class="col-12 col-lg-7 text-center text-lg-start">
                             <div class="mb-3">
                                 <span class="hero-feature-pill">
-                                    <i class="bi bi-sparkles text-cinebook-accent me-2"></i> Cinema Experience Redefined
+                                    <i class="bi bi-sparkles text-cinebook-accent me-2" aria-hidden="true"></i> Cinema Experience Redefined
                                 </span>
                             </div>
                             <h1 class="hero-title text-white mb-3">
@@ -95,11 +95,11 @@
                                 Discover movies. Choose your show. Book your seats.
                             </p>
                             <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-3">
-                                <button class="btn btn-cinebook-accent btn-lg px-4 py-3 d-inline-flex align-items-center justify-content-center gap-2" data-view="movies">
-                                    <i class="bi bi-compass"></i> Explore Movies
+                                <button type="button" class="btn btn-cinebook-accent btn-lg px-4 py-3 d-inline-flex align-items-center justify-content-center gap-2" data-view="movies">
+                                    <i class="bi bi-compass" aria-hidden="true"></i> Explore Movies
                                 </button>
-                                <button class="btn btn-cinebook-surface btn-lg px-4 py-3 d-inline-flex align-items-center justify-content-center gap-2" data-view="bookings">
-                                    <i class="bi bi-ticket-perforated"></i> My Bookings
+                                <button type="button" class="btn btn-cinebook-surface btn-lg px-4 py-3 d-inline-flex align-items-center justify-content-center gap-2" data-view="bookings">
+                                    <i class="bi bi-ticket-perforated" aria-hidden="true"></i> My Bookings
                                 </button>
                             </div>
                         </div>
@@ -108,7 +108,7 @@
                             <div class="cb-surface p-4 p-md-5 text-start shadow">
                                 <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-cinebook">
                                     <div class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-camera-reels text-cinebook-accent fs-4"></i>
+                                        <i class="bi bi-camera-reels text-cinebook-accent fs-4" aria-hidden="true"></i>
                                         <span class="fw-semibold text-white">Experience CineBook</span>
                                     </div>
                                     <span class="badge bg-cinebook-tertiary border border-cinebook text-cinebook-secondary">Live Booking</span>
@@ -116,28 +116,28 @@
                                 <div class="d-flex flex-column gap-3">
                                     <div class="d-flex align-items-start gap-3">
                                         <div class="p-2 rounded bg-cinebook-tertiary border border-cinebook text-cinebook-accent">
-                                            <i class="bi bi-film"></i>
+                                            <i class="bi bi-film" aria-hidden="true"></i>
                                         </div>
                                         <div>
-                                            <h6 class="text-white mb-1">Instant Movie Discovery</h6>
+                                            <h2 class="text-white h6 mb-1">Instant Movie Discovery</h2>
                                             <p class="text-cinebook-secondary fs-7 mb-0">Browse latest releases, ratings, and showtimes effortlessly.</p>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-start gap-3">
                                         <div class="p-2 rounded bg-cinebook-tertiary border border-cinebook text-cinebook-accent">
-                                            <i class="bi bi-grid-3x3"></i>
+                                            <i class="bi bi-grid-3x3" aria-hidden="true"></i>
                                         </div>
                                         <div>
-                                            <h6 class="text-white mb-1">Interactive Seat Selection</h6>
+                                            <h2 class="text-white h6 mb-1">Interactive Seat Selection</h2>
                                             <p class="text-cinebook-secondary fs-7 mb-0">Pick your favorite seats with visual screen layout.</p>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-start gap-3">
                                         <div class="p-2 rounded bg-cinebook-tertiary border border-cinebook text-cinebook-accent">
-                                            <i class="bi bi-ticket-detailed"></i>
+                                            <i class="bi bi-ticket-detailed" aria-hidden="true"></i>
                                         </div>
                                         <div>
-                                            <h6 class="text-white mb-1">Digital Pass & Cancellation</h6>
+                                            <h2 class="text-white h6 mb-1">Digital Pass & Cancellation</h2>
                                             <p class="text-cinebook-secondary fs-7 mb-0">Manage bookings with instant cancellation anytime.</p>
                                         </div>
                                     </div>
@@ -155,8 +155,8 @@
                         <h2 class="h4 fw-bold text-white mb-1">Now Showing</h2>
                         <p class="text-cinebook-secondary fs-7 mb-0">Featured blockbusters currently screening in cinemas.</p>
                     </div>
-                    <button class="btn btn-cinebook-outline btn-sm px-3" data-view="movies">
-                        View All Movies <i class="bi bi-arrow-right ms-1"></i>
+                    <button type="button" class="btn btn-cinebook-outline btn-sm px-3" data-view="movies">
+                        View All Movies <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
                     </button>
                 </div>
                 <div id="home-featured-grid" class="row g-4">
@@ -166,7 +166,7 @@
         </section>
 
         <!-- 2. MOVIES CATALOGUE VIEW -->
-        <section id="moviesView" class="spa-view d-none py-5">
+        <section id="moviesView" class="spa-view d-none py-5" aria-label="Movie Catalogue">
             <div class="container">
                 <!-- Catalog Header -->
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom border-cinebook">
@@ -175,21 +175,21 @@
                         <p class="text-cinebook-secondary fs-7 mb-0">Discover movies worth watching.</p>
                     </div>
 
-                    <!-- Search & Sort Row -->
+                    <!-- Search & Sort Controls -->
                     <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
                         <div class="input-group input-group-sm" style="min-width: 240px;">
                             <span class="input-group-text bg-cinebook-surface border-cinebook text-cinebook-muted">
-                                <i class="bi bi-search"></i>
+                                <i class="bi bi-search" aria-hidden="true"></i>
                             </span>
-                            <input type="text" id="catalog-search-input" class="form-control border-cinebook" placeholder="Search title or genre...">
-                            <button class="btn btn-cinebook-surface border-cinebook d-none" id="catalog-search-clear" type="button">
-                                <i class="bi bi-x"></i>
+                            <input type="text" id="catalog-search-input" class="form-control border-cinebook" placeholder="Search title or genre..." aria-label="Search movie catalogue">
+                            <button class="btn btn-cinebook-surface border-cinebook d-none" id="catalog-search-clear" type="button" aria-label="Clear search input">
+                                <i class="bi bi-x" aria-hidden="true"></i>
                             </button>
                         </div>
 
                         <div class="d-flex align-items-center gap-2">
                             <label for="catalog-sort-select" class="form-label text-cinebook-muted fs-7 mb-0 text-nowrap">Sort by:</label>
-                            <select id="catalog-sort-select" class="form-select form-select-sm border-cinebook" style="width: 170px;">
+                            <select id="catalog-sort-select" class="form-select form-select-sm border-cinebook" style="width: 170px;" aria-label="Sort movies by">
                                 <option value="popularity">Popularity</option>
                                 <option value="rating">Rating: High to Low</option>
                                 <option value="title">Title: A to Z</option>
@@ -200,14 +200,14 @@
                 </div>
 
                 <!-- Genre Filter Pills -->
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-2" id="genre-filter-container">
-                    <button class="btn-filter-pill active" data-genre="All">All</button>
-                    <button class="btn-filter-pill" data-genre="Action">Action</button>
-                    <button class="btn-filter-pill" data-genre="Drama">Drama</button>
-                    <button class="btn-filter-pill" data-genre="Comedy">Comedy</button>
-                    <button class="btn-filter-pill" data-genre="Thriller">Thriller</button>
-                    <button class="btn-filter-pill" data-genre="Sci-Fi">Sci-Fi</button>
-                    <button class="btn-filter-pill" data-genre="Animation">Animation</button>
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-2" id="genre-filter-container" role="toolbar" aria-label="Filter movies by genre">
+                    <button type="button" class="btn-filter-pill active" data-genre="All">All</button>
+                    <button type="button" class="btn-filter-pill" data-genre="Action">Action</button>
+                    <button type="button" class="btn-filter-pill" data-genre="Drama">Drama</button>
+                    <button type="button" class="btn-filter-pill" data-genre="Comedy">Comedy</button>
+                    <button type="button" class="btn-filter-pill" data-genre="Thriller">Thriller</button>
+                    <button type="button" class="btn-filter-pill" data-genre="Sci-Fi">Sci-Fi</button>
+                    <button type="button" class="btn-filter-pill" data-genre="Animation">Animation</button>
                 </div>
 
                 <!-- Movies Grid -->
@@ -218,10 +218,10 @@
                 <!-- Empty Search/Filter State -->
                 <div id="movies-empty-state" class="d-none text-center py-5 my-4">
                     <div class="p-4 cb-surface max-w-md mx-auto">
-                        <i class="bi bi-search text-cinebook-muted fs-1 mb-3 d-block"></i>
-                        <h4 class="text-white h5 mb-2">No movies match your search</h4>
+                        <i class="bi bi-search text-cinebook-muted fs-1 mb-3 d-block" aria-hidden="true"></i>
+                        <h2 class="text-white h5 mb-2">No movies match your search</h2>
                         <p class="text-cinebook-secondary fs-7 mb-3">Try adjusting your keywords or clearing the genre filter.</p>
-                        <button class="btn btn-cinebook-surface btn-sm" id="btn-reset-filters">
+                        <button type="button" class="btn btn-cinebook-surface btn-sm" id="btn-reset-filters">
                             Reset Filters
                         </button>
                     </div>
@@ -230,7 +230,7 @@
         </section>
 
         <!-- 3. BOOKING WORKFLOW VIEW -->
-        <section id="bookingView" class="spa-view d-none py-5">
+        <section id="bookingView" class="spa-view d-none py-5" aria-label="Ticket Booking">
             <div class="container">
                 <!-- Movie Overview Banner -->
                 <div id="booking-movie-banner-container" class="mb-4">
@@ -244,8 +244,8 @@
                         <!-- Step 1: Select Date -->
                         <div class="cb-surface p-4 mb-4">
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="badge bg-cinebook-accent text-white">1</span>
-                                <h5 class="text-white mb-0">Select Date</h5>
+                                <span class="badge bg-cinebook-accent text-white" aria-hidden="true">1</span>
+                                <h2 class="h5 text-white mb-0">Select Date</h2>
                             </div>
                             <div class="d-flex flex-wrap gap-2" id="booking-dates-container">
                                 <!-- Dynamic Date Cards -->
@@ -255,8 +255,8 @@
                         <!-- Step 2: Select Theatre & Showtime -->
                         <div class="cb-surface p-4 mb-4">
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="badge bg-cinebook-accent text-white">2</span>
-                                <h5 class="text-white mb-0">Select Theatre & Showtime</h5>
+                                <span class="badge bg-cinebook-accent text-white" aria-hidden="true">2</span>
+                                <h2 class="h5 text-white mb-0">Select Theatre & Showtime</h2>
                             </div>
                             <div class="d-flex flex-column gap-3" id="booking-theatres-container">
                                 <!-- Dynamic Theatres and Showtimes -->
@@ -267,35 +267,35 @@
                         <div class="cb-surface p-4 mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-cinebook-accent text-white">3</span>
-                                    <h5 class="text-white mb-0">Select Seats</h5>
+                                    <span class="badge bg-cinebook-accent text-white" aria-hidden="true">3</span>
+                                    <h2 class="h5 text-white mb-0">Select Seats</h2>
                                 </div>
                                 <span class="fs-7 text-cinebook-muted">Click on available seats to select</span>
                             </div>
 
                             <!-- Screen Graphic -->
-                            <div class="cinema-screen-wrap">
+                            <div class="cinema-screen-wrap" aria-hidden="true">
                                 <div class="cinema-screen-bar"></div>
                                 <div class="cinema-screen-label">Screen This Way</div>
                             </div>
 
                             <!-- Seat Grid -->
-                            <div class="seat-grid-container" id="booking-seat-grid">
+                            <div class="seat-grid-container" id="booking-seat-grid" role="group" aria-label="Cinema Seat Layout">
                                 <!-- Dynamic Seats -->
                             </div>
 
                             <!-- Legend -->
                             <div class="d-flex justify-content-center gap-4 mt-4 pt-3 border-top border-cinebook flex-wrap">
                                 <div class="seat-legend-item">
-                                    <div class="seat-legend-box bg-cinebook-surface"></div>
+                                    <div class="seat-legend-box bg-cinebook-surface" aria-hidden="true"></div>
                                     <span>Available</span>
                                 </div>
                                 <div class="seat-legend-item">
-                                    <div class="seat-legend-box bg-cinebook-accent border-0"></div>
+                                    <div class="seat-legend-box bg-cinebook-accent border-0" aria-hidden="true"></div>
                                     <span>Selected</span>
                                 </div>
                                 <div class="seat-legend-item">
-                                    <div class="seat-legend-box bg-cinebook-tertiary text-muted opacity-50"></div>
+                                    <div class="seat-legend-box bg-cinebook-tertiary text-muted opacity-50" aria-hidden="true"></div>
                                     <span>Occupied</span>
                                 </div>
                             </div>
@@ -304,24 +304,24 @@
                         <!-- Step 4: Customer Information -->
                         <div class="cb-surface p-4">
                             <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="badge bg-cinebook-accent text-white">4</span>
-                                <h5 class="text-white mb-0">Customer Information</h5>
+                                <span class="badge bg-cinebook-accent text-white" aria-hidden="true">4</span>
+                                <h2 class="h5 text-white mb-0">Customer Information</h2>
                             </div>
                             <form id="booking-customer-form" class="needs-validation" novalidate>
                                 <div class="row g-3">
                                     <div class="col-12 col-md-6">
                                         <label for="cust-name" class="form-label">Full Name <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="cust-name" placeholder="Alex Morgan" required>
+                                        <input type="text" class="form-control" id="cust-name" placeholder="Alex Morgan" required autocomplete="name">
                                         <div class="invalid-feedback">Please provide your full name.</div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <label for="cust-email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" id="cust-email" placeholder="alex@cinebook.com" required>
+                                        <input type="email" class="form-control" id="cust-email" placeholder="alex@cinebook.com" required autocomplete="email">
                                         <div class="invalid-feedback">Please enter a valid email address.</div>
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <label for="cust-phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
-                                        <input type="tel" class="form-control" id="cust-phone" placeholder="+91 98765 43210" pattern="^\+?[0-9\s-]{10,15}$" required>
+                                        <input type="tel" class="form-control" id="cust-phone" placeholder="+91 98765 43210" pattern="^\+?[0-9\s-]{10,15}$" required autocomplete="tel">
                                         <div class="invalid-feedback">Please enter a valid contact phone number.</div>
                                     </div>
                                 </div>
@@ -333,7 +333,7 @@
                     <!-- Right: Live Booking Summary -->
                     <div class="col-12 col-lg-4">
                         <div class="booking-summary-panel p-4 shadow">
-                            <h5 class="text-white mb-3 pb-2 border-bottom border-cinebook">Booking Summary</h5>
+                            <h2 class="h5 text-white mb-3 pb-2 border-bottom border-cinebook">Booking Summary</h2>
                             
                             <div class="d-flex flex-column gap-2 mb-3 fs-7" id="booking-summary-details">
                                 <div class="d-flex justify-content-between">
@@ -387,14 +387,14 @@
         </section>
 
         <!-- 4. BOOKING CONFIRMATION VIEW -->
-        <section id="confirmationView" class="spa-view d-none py-5">
+        <section id="confirmationView" class="spa-view d-none py-5" aria-label="Booking Confirmation">
             <div class="container py-4">
                 <div class="digital-ticket-card p-4 p-md-5 mx-auto max-w-xl shadow">
                     <div class="text-center mb-4 pb-3 border-bottom border-cinebook">
                         <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-surface mb-3 border border-cinebook">
-                            <i class="bi bi-check2-circle text-success fs-1"></i>
+                            <i class="bi bi-check2-circle text-success fs-1" aria-hidden="true"></i>
                         </div>
-                        <h2 class="h3 fw-bold text-white mb-1">Booking Confirmed 🎟️</h2>
+                        <h1 class="h3 fw-bold text-white mb-1">Booking Confirmed 🎟️</h1>
                         <p class="text-cinebook-secondary fs-7 mb-0">Your digital cinema pass is ready</p>
                     </div>
 
@@ -403,11 +403,11 @@
                     </div>
 
                     <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 pt-3 border-top border-cinebook">
-                        <button class="btn btn-cinebook-accent px-4 py-2" data-view="bookings">
-                            <i class="bi bi-ticket-perforated me-1"></i> View My Bookings
+                        <button type="button" class="btn btn-cinebook-accent px-4 py-2" data-view="bookings">
+                            <i class="bi bi-ticket-perforated me-1" aria-hidden="true"></i> View My Bookings
                         </button>
-                        <button class="btn btn-cinebook-surface px-4 py-2" data-view="movies">
-                            <i class="bi bi-compass me-1"></i> Back to Movies
+                        <button type="button" class="btn btn-cinebook-surface px-4 py-2" data-view="movies">
+                            <i class="bi bi-compass me-1" aria-hidden="true"></i> Back to Movies
                         </button>
                     </div>
                 </div>
@@ -415,15 +415,15 @@
         </section>
 
         <!-- 5. MY BOOKINGS VIEW -->
-        <section id="bookingsView" class="spa-view d-none py-5">
+        <section id="bookingsView" class="spa-view d-none py-5" aria-label="My Bookings">
             <div class="container">
                 <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-cinebook">
                     <div>
                         <h1 class="h3 fw-bold text-white mb-1">My Bookings</h1>
                         <p class="text-cinebook-secondary fs-7 mb-0">View, manage, and track your movie reservations.</p>
                     </div>
-                    <button class="btn btn-cinebook-accent btn-sm px-3" data-view="movies">
-                        <i class="bi bi-plus-lg me-1"></i> Book New Ticket
+                    <button type="button" class="btn btn-cinebook-accent btn-sm px-3" data-view="movies">
+                        <i class="bi bi-plus-lg me-1" aria-hidden="true"></i> Book New Ticket
                     </button>
                 </div>
 
@@ -436,14 +436,14 @@
                 <div id="bookings-empty-state" class="d-none text-center py-5">
                     <div class="cb-surface p-5 max-w-xl mx-auto">
                         <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-tertiary mb-3 border border-cinebook">
-                            <i class="bi bi-ticket-perforated text-cinebook-accent fs-1"></i>
+                            <i class="bi bi-ticket-perforated text-cinebook-accent fs-1" aria-hidden="true"></i>
                         </div>
-                        <h3 class="h4 fw-bold text-white mb-2">You haven't booked any movies yet</h3>
+                        <h2 class="h4 fw-bold text-white mb-2">You haven't booked any movies yet</h2>
                         <p class="text-cinebook-secondary mb-4">
                             Explore currently screening blockbusters and secure your seats today.
                         </p>
-                        <button class="btn btn-cinebook-accent px-4 py-2" data-view="movies">
-                            <i class="bi bi-compass me-1"></i> Explore Movies
+                        <button type="button" class="btn btn-cinebook-accent px-4 py-2" data-view="movies">
+                            <i class="bi bi-compass me-1" aria-hidden="true"></i> Explore Movies
                         </button>
                     </div>
                 </div>
@@ -451,44 +451,44 @@
         </section>
 
         <!-- 6. PROFILE VIEW -->
-        <section id="profileView" class="spa-view d-none py-5">
+        <section id="profileView" class="spa-view d-none py-5" aria-label="User Profile">
             <div class="container py-4">
                 <div class="cb-surface p-4 p-md-5 mx-auto max-w-lg shadow">
                     <div class="text-center mb-4 pb-3 border-bottom border-cinebook">
                         <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-tertiary mb-3 border border-cinebook" style="width: 72px; height: 72px;">
                             <span class="fs-4 fw-bold text-cinebook-accent" id="profile-avatar-initials">AM</span>
                         </div>
-                        <h2 class="h4 fw-bold text-white mb-1" id="profile-display-name">Alex Morgan</h2>
+                        <h1 class="h4 fw-bold text-white mb-1" id="profile-display-name">Alex Morgan</h1>
                         <p class="text-cinebook-secondary fs-7 mb-0" id="profile-display-email">alex.morgan@cinebook.com</p>
                     </div>
 
                     <div class="d-flex flex-column gap-3 mb-4">
                         <div class="d-flex justify-content-between align-items-center p-3 rounded bg-cinebook-tertiary border border-cinebook">
                             <div class="d-flex align-items-center gap-2 text-cinebook-secondary fs-7">
-                                <i class="bi bi-telephone text-cinebook-accent"></i> Contact Phone
+                                <i class="bi bi-telephone text-cinebook-accent" aria-hidden="true"></i> Contact Phone
                             </div>
                             <span class="text-white fs-7" id="profile-display-phone">+91 98765 43210</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center p-3 rounded bg-cinebook-tertiary border border-cinebook">
                             <div class="d-flex align-items-center gap-2 text-cinebook-secondary fs-7">
-                                <i class="bi bi-geo-alt text-cinebook-accent"></i> Preferred City
+                                <i class="bi bi-geo-alt text-cinebook-accent" aria-hidden="true"></i> Preferred City
                             </div>
                             <span class="text-white fs-7" id="profile-display-city">Mumbai</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center p-3 rounded bg-cinebook-tertiary border border-cinebook">
                             <div class="d-flex align-items-center gap-2 text-cinebook-secondary fs-7">
-                                <i class="bi bi-ticket-perforated text-cinebook-accent"></i> Total Bookings
+                                <i class="bi bi-ticket-perforated text-cinebook-accent" aria-hidden="true"></i> Total Bookings
                             </div>
                             <span class="badge bg-cinebook-surface text-white" id="profile-total-bookings">0</span>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between gap-2">
-                        <button class="btn btn-cinebook-surface btn-sm px-3 py-2" data-view="home">
-                            <i class="bi bi-house-door me-1"></i> Return Home
+                        <button type="button" class="btn btn-cinebook-surface btn-sm px-3 py-2" data-view="home">
+                            <i class="bi bi-house-door me-1" aria-hidden="true"></i> Return Home
                         </button>
-                        <button class="btn btn-cinebook-accent btn-sm px-3 py-2" id="btn-edit-profile-trigger">
-                            <i class="bi bi-pencil-square me-1"></i> Edit Profile
+                        <button type="button" class="btn btn-cinebook-accent btn-sm px-3 py-2" id="btn-edit-profile-trigger">
+                            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Edit Profile
                         </button>
                     </div>
                 </div>
@@ -498,12 +498,12 @@
     </main>
 
     <!-- Application Footer -->
-    <footer class="bg-cinebook-secondary border-top border-cinebook mt-auto py-4">
+    <footer class="bg-cinebook-secondary border-top border-cinebook mt-auto py-4" aria-label="Footer">
         <div class="container">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
                 <div class="text-center text-md-start">
                     <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
-                        <i class="bi bi-film text-cinebook-accent"></i>
+                        <i class="bi bi-film text-cinebook-accent" aria-hidden="true"></i>
                         <span class="fw-semibold text-white">CineBook</span>
                     </div>
                     <div class="text-cinebook-muted fs-7">
@@ -534,7 +534,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-white" id="movieDetailsModalLabel">Movie Details</h5>
+                    <h2 class="modal-title text-white h5" id="movieDetailsModalLabel">Movie Details</h2>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-0" id="movie-details-modal-body">
@@ -549,13 +549,13 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-white" id="cancelBookingModalLabel">Cancel Booking</h5>
+                    <h2 class="modal-title text-white h5" id="cancelBookingModalLabel">Cancel Booking</h2>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="text-center py-2">
-                        <i class="bi bi-exclamation-triangle text-warning fs-1 mb-2 d-block"></i>
-                        <h6 class="text-white mb-2">Are you sure you want to cancel this booking?</h6>
+                        <i class="bi bi-exclamation-triangle text-warning fs-1 mb-2 d-block" aria-hidden="true"></i>
+                        <h3 class="text-white h6 mb-2">Are you sure you want to cancel this booking?</h3>
                         <p class="text-cinebook-secondary fs-7 mb-0" id="cancel-modal-booking-info">
                             Booking ID: CB-0000
                         </p>
@@ -574,29 +574,29 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-white" id="editProfileModalLabel">Edit Profile</h5>
+                    <h2 class="modal-title text-white h5" id="editProfileModalLabel">Edit Profile</h2>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="edit-profile-form" class="needs-validation" novalidate>
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="edit-profile-name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="edit-profile-name" required>
+                            <input type="text" class="form-control" id="edit-profile-name" required autocomplete="name">
                             <div class="invalid-feedback">Name is required.</div>
                         </div>
                         <div class="mb-3">
                             <label for="edit-profile-email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="edit-profile-email" required>
+                            <input type="email" class="form-control" id="edit-profile-email" required autocomplete="email">
                             <div class="invalid-feedback">Valid email is required.</div>
                         </div>
                         <div class="mb-3">
                             <label for="edit-profile-phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="edit-profile-phone" required>
+                            <input type="tel" class="form-control" id="edit-profile-phone" required autocomplete="tel">
                             <div class="invalid-feedback">Phone number is required.</div>
                         </div>
                         <div class="mb-3">
                             <label for="edit-profile-city" class="form-label">Preferred City</label>
-                            <input type="text" class="form-control" id="edit-profile-city" required>
+                            <input type="text" class="form-control" id="edit-profile-city" required autocomplete="address-level2">
                             <div class="invalid-feedback">City is required.</div>
                         </div>
                     </div>
@@ -610,7 +610,7 @@
     </div>
 
     <!-- Toast Notifications Container -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container"></div>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Vendor Dependencies -->
     <!-- jQuery 3.7.1 -->

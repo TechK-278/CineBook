@@ -1,107 +1,120 @@
 /**
- * CineBook — Main Application Logic & Controller
- * Handles SPA state management, booking engine, search/filter/sort, profile, and event workflows
+ * CineBook — Main Application Controller
+ * Orchestrates SPA routing, booking workflows, catalog interactions, and persistence
  */
 
 const CineBook = (function ($) {
-    const VALID_VIEWS = ['home', 'movies', 'booking', 'confirmation', 'bookings', 'profile'];
-    let currentView = 'home';
+    'use strict';
 
-    let allMovies = [];
-    let allTheatres = [];
-    let upcomingDates = [];
-    let seatLayout = [];
+    const VALID_VIEWS = Object.freeze(['home', 'movies', 'booking', 'confirmation', 'bookings', 'profile']);
+    const MAX_SEATS_PER_BOOKING = 8;
 
-    // Filter & Search State
-    let filterState = {
-        search: '',
-        genre: 'All',
-        sort: 'popularity'
+    // Centralized Application State
+    const appState = {
+        currentView: 'home',
+        movies: [],
+        theatres: [],
+        upcomingDates: [],
+        seatLayout: [],
+        filter: {
+            search: '',
+            genre: 'All',
+            sort: 'popularity'
+        },
+        activeBooking: {
+            movie: null,
+            movieId: null,
+            dateIndex: 0,
+            date: null,
+            theatreId: null,
+            theatre: null,
+            showtime: null,
+            selectedSeats: []
+        },
+        cancellingBookingId: null
     };
-
-    // Active Booking State
-    let activeBooking = {
-        movie: null,
-        movieId: null,
-        dateIndex: 0,
-        date: null,
-        theatreId: null,
-        theatre: null,
-        showtime: null,
-        selectedSeats: [],
-        totalAmount: 0
-    };
-
-    let cancellingBookingId = null;
 
     /**
-     * Filter and sort movies according to state
+     * Compute filtered and sorted movie list
+     * @returns {Array}
      */
     function getFilteredMovies() {
-        let list = [...allMovies];
+        let list = [...appState.movies];
+        const query = appState.filter.search.trim().toLowerCase();
 
-        // 1. Search Query (Title or Genre)
-        if (filterState.search.trim() !== '') {
-            const query = filterState.search.toLowerCase().trim();
-            list = list.filter(m => 
-                m.title.toLowerCase().includes(query) || 
-                m.genre.some(g => g.toLowerCase().includes(query)) ||
-                m.language.toLowerCase().includes(query)
+        // 1. Text Search across Title, Genre, Language
+        if (query) {
+            list = list.filter(movie => 
+                movie.title.toLowerCase().includes(query) ||
+                movie.genre.some(g => g.toLowerCase().includes(query)) ||
+                movie.language.toLowerCase().includes(query)
             );
         }
 
-        // 2. Genre Filter
-        if (filterState.genre && filterState.genre !== 'All') {
-            list = list.filter(m => m.genre.includes(filterState.genre));
+        // 2. Genre Tag Filter
+        if (appState.filter.genre && appState.filter.genre !== 'All') {
+            list = list.filter(movie => movie.genre.includes(appState.filter.genre));
         }
 
-        // 3. Sorting
-        if (filterState.sort === 'rating') {
-            list.sort((a, b) => b.rating - a.rating);
-        } else if (filterState.sort === 'title') {
-            list.sort((a, b) => a.title.localeCompare(b.title));
-        } else if (filterState.sort === 'newest') {
-            list.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
-        } else {
-            // Default: Popularity (featured first, then rating)
-            list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || b.rating - a.rating);
+        // 3. Sorting Rules
+        switch (appState.filter.sort) {
+            case 'rating':
+                list.sort((a, b) => b.rating - a.rating);
+                break;
+            case 'title':
+                list.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'newest':
+                list.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+                break;
+            case 'popularity':
+            default:
+                list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || b.rating - a.rating);
+                break;
         }
 
         return list;
     }
 
     /**
-     * Update catalogue grid based on current filter/search
+     * Update movie catalogue view based on current filter state
      */
     function applyCatalogueFilters() {
         const filtered = getFilteredMovies();
         UI.renderCatalogue(filtered);
 
-        // Toggle clear search button
-        if (filterState.search.trim() !== '') {
-            $('#catalog-search-clear').removeClass('d-none');
-        } else {
-            $('#catalog-search-clear').addClass('d-none');
-        }
+        // Toggle clear search icon button
+        const hasSearch = appState.filter.search.trim().length > 0;
+        $('#catalog-search-clear').toggleClass('d-none', !hasSearch);
     }
 
     /**
      * Centralized SPA Navigation
+     * @param {string} viewName 
+     * @param {boolean} updateHash 
      */
     function navigateTo(viewName, updateHash = true) {
         const targetView = VALID_VIEWS.includes(viewName) ? viewName : 'home';
-        currentView = targetView;
+        appState.currentView = targetView;
 
-        // Perform view-specific preparations
-        if (targetView === 'movies') {
-            applyCatalogueFilters();
-        } else if (targetView === 'bookings') {
-            const bookings = Storage.getBookings();
-            UI.renderBookingsList(bookings);
-        } else if (targetView === 'profile') {
-            const profile = Storage.getProfile();
-            const bookings = Storage.getBookings();
-            UI.renderProfile(profile, bookings.length);
+        // Perform view-specific data refresh
+        switch (targetView) {
+            case 'movies':
+                applyCatalogueFilters();
+                break;
+            case 'bookings': {
+                const bookings = Storage.getBookings();
+                UI.renderBookingsList(bookings);
+                break;
+            }
+            case 'profile': {
+                const profile = Storage.getProfile();
+                const bookings = Storage.getBookings();
+                UI.renderProfile(profile, bookings.length);
+                break;
+            }
+            default:
+                break;
         }
 
         UI.showView(targetView);
@@ -112,51 +125,54 @@ const CineBook = (function ($) {
     }
 
     /**
-     * Start Booking Flow for a specific movie
+     * Start Booking Flow for a given movie ID
+     * @param {string} movieId 
      */
     function startBookingForMovie(movieId) {
         const movie = CineData.getMovieById(movieId);
         if (!movie) {
-            UI.showToast('Movie details not found.', 'danger');
+            UI.showToast('Movie not found or unavailable.', 'danger');
             return;
         }
 
-        // Hide movie details modal if open
+        // Hide Details Modal if open
         const modalEl = document.getElementById('movieDetailsModal');
-        const modalInstance = bootstrap.Modal.getInstance(modalEl);
-        if (modalInstance) {
-            modalInstance.hide();
+        if (modalEl) {
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
         }
 
-        // Reset and populate active booking state
-        activeBooking.movie = movie;
-        activeBooking.movieId = movie.id;
-        activeBooking.dateIndex = 0;
-        activeBooking.date = upcomingDates[0];
-        activeBooking.theatreId = allTheatres[0].id;
-        activeBooking.theatre = allTheatres[0];
-        activeBooking.showtime = allTheatres[0].showtimes[0];
-        activeBooking.selectedSeats = [];
+        // Initialize active booking state
+        appState.activeBooking.movie = movie;
+        appState.activeBooking.movieId = movie.id;
+        appState.activeBooking.dateIndex = 0;
+        appState.activeBooking.date = appState.upcomingDates[0];
+        appState.activeBooking.theatreId = appState.theatres[0].id;
+        appState.activeBooking.theatre = appState.theatres[0];
+        appState.activeBooking.showtime = appState.theatres[0].showtimes[0];
+        appState.activeBooking.selectedSeats = [];
 
-        // Pre-fill customer form from saved profile
+        // Pre-fill profile contact info
         const profile = Storage.getProfile();
         UI.renderProfile(profile, Storage.getBookings().length);
 
         // Render booking step components
         UI.renderBookingMovieBanner(movie);
-        UI.renderBookingDates(upcomingDates, activeBooking.dateIndex);
-        UI.renderBookingTheatres(allTheatres, activeBooking.theatreId, activeBooking.showtime);
-        UI.renderSeatGrid(seatLayout, activeBooking.selectedSeats);
+        UI.renderBookingDates(appState.upcomingDates, appState.activeBooking.dateIndex);
+        UI.renderBookingTheatres(appState.theatres, appState.activeBooking.theatreId, appState.activeBooking.showtime);
+        UI.renderSeatGrid(appState.seatLayout, appState.activeBooking.selectedSeats);
         UI.updateBookingSummary(
-            activeBooking.movie,
-            activeBooking.theatre,
-            activeBooking.date,
-            activeBooking.showtime,
-            activeBooking.selectedSeats,
-            activeBooking.movie.price
+            appState.activeBooking.movie,
+            appState.activeBooking.theatre,
+            appState.activeBooking.date,
+            appState.activeBooking.showtime,
+            appState.activeBooking.selectedSeats,
+            appState.activeBooking.movie.price
         );
 
-        // Clear previous form validation state
+        // Reset previous form validation state
         $('#booking-customer-form').removeClass('was-validated');
 
         // Navigate to booking view
@@ -164,18 +180,20 @@ const CineBook = (function ($) {
     }
 
     /**
-     * Confirm and finalize the current booking
+     * Finalize and confirm the current booking
      */
     function finalizeBooking() {
         const form = document.getElementById('booking-customer-form');
+        if (!form) return;
+
         if (!form.checkValidity()) {
             form.classList.add('was-validated');
-            UI.showToast('Please fill all required customer contact details.', 'warning');
+            UI.showToast('Please complete all required customer details.', 'warning');
             return;
         }
 
-        if (activeBooking.selectedSeats.length === 0) {
-            UI.showToast('Please select at least one cinema seat.', 'warning');
+        if (appState.activeBooking.selectedSeats.length === 0) {
+            UI.showToast('Please select at least one seat to proceed.', 'warning');
             return;
         }
 
@@ -183,40 +201,39 @@ const CineBook = (function ($) {
         const customerEmail = $('#cust-email').val().trim();
         const customerPhone = $('#cust-phone').val().trim();
 
-        const subtotal = activeBooking.selectedSeats.length * activeBooking.movie.price;
-        const fee = Math.round(subtotal * 0.12);
-        const grandTotal = subtotal + fee;
+        const pricing = CineData.calculatePricing(
+            appState.activeBooking.movie.price,
+            appState.activeBooking.selectedSeats.length
+        );
 
         const bookingId = `CB-${Math.floor(100000 + Math.random() * 900000)}`;
 
         const bookingObj = {
             id: bookingId,
-            movieId: activeBooking.movieId,
-            movieTitle: activeBooking.movie.title,
-            poster: activeBooking.movie.poster,
-            theatre: activeBooking.theatre.name,
-            screen: activeBooking.theatre.screen,
-            date: activeBooking.date.fullDate,
-            showtime: activeBooking.showtime,
-            seats: [...activeBooking.selectedSeats],
+            movieId: appState.activeBooking.movieId,
+            movieTitle: appState.activeBooking.movie.title,
+            poster: appState.activeBooking.movie.poster,
+            theatre: appState.activeBooking.theatre.name,
+            screen: appState.activeBooking.theatre.screen,
+            date: appState.activeBooking.date.fullDate,
+            showtime: appState.activeBooking.showtime,
+            seats: [...appState.activeBooking.selectedSeats],
             customer: {
                 name: customerName,
                 email: customerEmail,
                 phone: customerPhone
             },
-            totalAmount: grandTotal,
+            totalAmount: pricing.grandTotal,
             status: 'Confirmed',
             bookingDate: new Date().toISOString()
         };
 
-        // Persist booking
+        // Persist booking to LocalStorage
         Storage.addBooking(bookingObj);
 
-        // Update profile booking count
+        // Update profile stats and render confirmation
         const profile = Storage.getProfile();
         UI.renderProfile(profile, Storage.getBookings().length);
-
-        // Render confirmation view
         UI.renderConfirmation(bookingObj);
         UI.showToast(`Booking ${bookingId} confirmed successfully!`, 'success');
 
@@ -225,43 +242,43 @@ const CineBook = (function ($) {
     }
 
     /**
-     * Wire up all event listeners
+     * Register all delegated event listeners
      */
-    function initEvents() {
+    function registerEvents() {
         // Global SPA link clicks
         $(document).on('click', '[data-view]', function (e) {
             e.preventDefault();
-            const targetView = $(this).data('view');
-            if (targetView) {
-                navigateTo(targetView);
+            const target = $(this).data('view');
+            if (target) {
+                navigateTo(target);
             }
         });
 
-        // Search inputs (navbar and catalogue synced)
+        // Search inputs synchronized between navbar and catalogue
         $('#catalog-search-input, #navbar-search-input').on('input', function () {
-            const val = $(this).val();
-            filterState.search = val;
-            $('#catalog-search-input, #navbar-search-input').val(val);
-            
-            if (currentView !== 'movies') {
+            const query = $(this).val();
+            appState.filter.search = query;
+            $('#catalog-search-input, #navbar-search-input').val(query);
+
+            if (appState.currentView !== 'movies') {
                 navigateTo('movies');
             } else {
                 applyCatalogueFilters();
             }
         });
 
-        // Clear search input
+        // Clear search input button
         $('#catalog-search-clear').on('click', function () {
-            filterState.search = '';
+            appState.filter.search = '';
             $('#catalog-search-input, #navbar-search-input').val('');
             applyCatalogueFilters();
         });
 
-        // Reset all filters in empty state
+        // Reset filter button in empty state
         $('#btn-reset-filters').on('click', function () {
-            filterState.search = '';
-            filterState.genre = 'All';
-            filterState.sort = 'popularity';
+            appState.filter.search = '';
+            appState.filter.genre = 'All';
+            appState.filter.sort = 'popularity';
             $('#catalog-search-input, #navbar-search-input').val('');
             $('#catalog-sort-select').val('popularity');
             $('.btn-filter-pill').removeClass('active');
@@ -272,19 +289,19 @@ const CineBook = (function ($) {
         // Genre Filter Pills
         $('#genre-filter-container').on('click', '.btn-filter-pill', function () {
             const genre = $(this).data('genre');
-            filterState.genre = genre;
+            appState.filter.genre = genre;
             $('.btn-filter-pill').removeClass('active');
             $(this).addClass('active');
             applyCatalogueFilters();
         });
 
-        // Sort Select Change
+        // Sort Dropdown Selection
         $('#catalog-sort-select').on('change', function () {
-            filterState.sort = $(this).val();
+            appState.filter.sort = $(this).val();
             applyCatalogueFilters();
         });
 
-        // View Movie Details Click
+        // View Movie Details Modal Trigger
         $(document).on('click', '.btn-view-details', function (e) {
             e.preventDefault();
             const movieId = $(this).data('movie-id');
@@ -292,75 +309,79 @@ const CineBook = (function ($) {
             UI.showMovieDetailsModal(movie);
         });
 
-        // Book Movie Click (from card or modal)
+        // Book Movie Trigger (Card and Modal)
         $(document).on('click', '.btn-book-movie, .btn-modal-book-now', function (e) {
             e.preventDefault();
             const movieId = $(this).data('movie-id');
             startBookingForMovie(movieId);
         });
 
-        // Booking: Date Selection
+        // Date Picker Selection
         $('#booking-dates-container').on('click', '.booking-date-card', function () {
-            const idx = $(this).data('date-index');
-            activeBooking.dateIndex = idx;
-            activeBooking.date = upcomingDates[idx];
-            UI.renderBookingDates(upcomingDates, idx);
-            UI.updateBookingSummary(
-                activeBooking.movie,
-                activeBooking.theatre,
-                activeBooking.date,
-                activeBooking.showtime,
-                activeBooking.selectedSeats,
-                activeBooking.movie.price
-            );
+            const idx = parseInt($(this).data('date-index'), 10);
+            if (!isNaN(idx) && appState.upcomingDates[idx]) {
+                appState.activeBooking.dateIndex = idx;
+                appState.activeBooking.date = appState.upcomingDates[idx];
+                UI.renderBookingDates(appState.upcomingDates, idx);
+                UI.updateBookingSummary(
+                    appState.activeBooking.movie,
+                    appState.activeBooking.theatre,
+                    appState.activeBooking.date,
+                    appState.activeBooking.showtime,
+                    appState.activeBooking.selectedSeats,
+                    appState.activeBooking.movie.price
+                );
+            }
         });
 
-        // Booking: Theatre & Showtime Selection
+        // Theatre & Showtime Selection
         $('#booking-theatres-container').on('click', '.showtime-pill', function () {
             const theatreId = $(this).data('theatre-id');
             const showtime = $(this).data('showtime');
-            const theatre = allTheatres.find(t => t.id === theatreId);
+            const theatre = CineData.getTheatreById(theatreId);
 
-            activeBooking.theatreId = theatreId;
-            activeBooking.theatre = theatre;
-            activeBooking.showtime = showtime;
+            if (theatre && showtime) {
+                appState.activeBooking.theatreId = theatreId;
+                appState.activeBooking.theatre = theatre;
+                appState.activeBooking.showtime = showtime;
 
-            UI.renderBookingTheatres(allTheatres, theatreId, showtime);
-            UI.updateBookingSummary(
-                activeBooking.movie,
-                activeBooking.theatre,
-                activeBooking.date,
-                activeBooking.showtime,
-                activeBooking.selectedSeats,
-                activeBooking.movie.price
-            );
+                UI.renderBookingTheatres(appState.theatres, theatreId, showtime);
+                UI.updateBookingSummary(
+                    appState.activeBooking.movie,
+                    appState.activeBooking.theatre,
+                    appState.activeBooking.date,
+                    appState.activeBooking.showtime,
+                    appState.activeBooking.selectedSeats,
+                    appState.activeBooking.movie.price
+                );
+            }
         });
 
-        // Booking: Seat Selection Click
+        // Seat Toggle Selection
         $('#booking-seat-grid').on('click', '.seat-btn', function () {
             const seatId = $(this).data('seat-id');
-            if ($(this).hasClass('occupied')) return;
+            if ($(this).hasClass('occupied') || !seatId) return;
 
-            const index = activeBooking.selectedSeats.indexOf(seatId);
+            const index = appState.activeBooking.selectedSeats.indexOf(seatId);
             if (index > -1) {
-                activeBooking.selectedSeats.splice(index, 1);
+                appState.activeBooking.selectedSeats.splice(index, 1);
                 $(this).removeClass('selected');
             } else {
-                if (activeBooking.selectedSeats.length >= 8) {
-                    UI.showToast('You can select a maximum of 8 seats per booking.', 'warning');
+                if (appState.activeBooking.selectedSeats.length >= MAX_SEATS_PER_BOOKING) {
+                    UI.showToast(`You can select a maximum of ${MAX_SEATS_PER_BOOKING} seats per booking.`, 'warning');
                     return;
                 }
-                activeBooking.selectedSeats.push(seatId);
+                appState.activeBooking.selectedSeats.push(seatId);
                 $(this).addClass('selected');
             }
 
             UI.updateBookingSummary(
-                activeBooking.movie,
-                activeBooking.theatre,
-                activeBooking.date,
-                activeBooking.showtime,
-                activeBooking.selectedSeats,
-                activeBooking.movie.price
+                appState.activeBooking.movie,
+                appState.activeBooking.theatre,
+                appState.activeBooking.date,
+                appState.activeBooking.showtime,
+                appState.activeBooking.selectedSeats,
+                appState.activeBooking.movie.price
             );
         });
 
@@ -369,41 +390,47 @@ const CineBook = (function ($) {
             finalizeBooking();
         });
 
-        // Cancellation Trigger on Booking Card
+        // Cancellation Modal Trigger
         $(document).on('click', '.btn-trigger-cancel', function () {
-            cancellingBookingId = $(this).data('booking-id');
-            $('#cancel-modal-booking-info').text(`Booking Reference: ${cancellingBookingId}`);
+            appState.cancellingBookingId = $(this).data('booking-id');
+            $('#cancel-modal-booking-info').text(`Booking Reference: ${appState.cancellingBookingId}`);
             const modalEl = document.getElementById('cancelBookingModal');
-            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
-            modalInstance.show();
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modalInstance.show();
+            }
         });
 
-        // Confirm Cancellation Button in Modal
+        // Confirm Cancellation in Modal
         $('#btn-confirm-cancel-booking').on('click', function () {
-            if (!cancellingBookingId) return;
-            const success = Storage.cancelBooking(cancellingBookingId);
+            if (!appState.cancellingBookingId) return;
+            const success = Storage.cancelBooking(appState.cancellingBookingId);
             const modalEl = document.getElementById('cancelBookingModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalEl);
-            if (modalInstance) {
-                modalInstance.hide();
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
             }
 
             if (success) {
-                UI.showToast(`Booking ${cancellingBookingId} cancelled.`, 'info');
+                UI.showToast(`Booking ${appState.cancellingBookingId} cancelled.`, 'info');
                 const bookings = Storage.getBookings();
                 UI.renderBookingsList(bookings);
                 UI.renderProfile(Storage.getProfile(), bookings.length);
             }
-            cancellingBookingId = null;
+            appState.cancellingBookingId = null;
         });
 
-        // Edit Profile Trigger
+        // Edit Profile Modal Trigger
         $('#btn-edit-profile-trigger').on('click', function () {
             const profile = Storage.getProfile();
             UI.renderProfile(profile, Storage.getBookings().length);
             const modalEl = document.getElementById('editProfileModal');
-            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
-            modalInstance.show();
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modalInstance.show();
+            }
         });
 
         // Save Profile Form Submission
@@ -414,12 +441,18 @@ const CineBook = (function ($) {
                 return;
             }
 
+            const name = $('#edit-profile-name').val().trim();
+            const email = $('#edit-profile-email').val().trim();
+            const phone = $('#edit-profile-phone').val().trim();
+            const city = $('#edit-profile-city').val().trim();
+            const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
             const updatedProfile = {
-                name: $('#edit-profile-name').val().trim(),
-                email: $('#edit-profile-email').val().trim(),
-                phone: $('#edit-profile-phone').val().trim(),
-                city: $('#edit-profile-city').val().trim(),
-                avatar: $('#edit-profile-name').val().trim().split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+                name: name,
+                email: email,
+                phone: phone,
+                city: city,
+                avatar: initials
             };
 
             Storage.saveProfile(updatedProfile);
@@ -427,56 +460,56 @@ const CineBook = (function ($) {
             UI.renderProfile(updatedProfile, bookings.length);
 
             const modalEl = document.getElementById('editProfileModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalEl);
-            if (modalInstance) {
-                modalInstance.hide();
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
             }
 
             UI.showToast('Profile updated successfully!', 'success');
         });
 
-        // Browser Back/Forward navigation support
+        // Hash Navigation Handler
         $(window).on('hashchange', function () {
             const hashView = window.location.hash.replace('#', '');
-            if (hashView && hashView !== currentView && VALID_VIEWS.includes(hashView)) {
+            if (hashView && hashView !== appState.currentView && VALID_VIEWS.includes(hashView)) {
                 navigateTo(hashView, false);
             }
         });
     }
 
     /**
-     * Application Initialization
+     * Application Bootstrapper
      */
     function init() {
         Storage.init();
+        UI.init();
 
-        allMovies = CineData.getMovies();
-        allTheatres = CineData.getTheatres();
-        upcomingDates = CineData.getUpcomingDates();
-        seatLayout = CineData.getSeatLayout();
+        appState.movies = CineData.getMovies();
+        appState.theatres = CineData.getTheatres();
+        appState.upcomingDates = CineData.getUpcomingDates();
+        appState.seatLayout = CineData.getSeatLayout();
 
-        // Render Home featured movies & Catalogue
-        UI.renderFeaturedMovies(allMovies);
-        UI.renderCatalogue(allMovies);
+        // Initial render for views
+        UI.renderFeaturedMovies(appState.movies);
+        UI.renderCatalogue(appState.movies);
 
-        // Load profile and bookings
         const profile = Storage.getProfile();
         const bookings = Storage.getBookings();
         UI.renderProfile(profile, bookings.length);
         UI.renderBookingsList(bookings);
 
-        // Wire event listeners
-        initEvents();
+        // Register event listeners
+        registerEvents();
 
-        // Route to initial view based on URL hash
+        // Route to initial view from hash or default to 'home'
         const initialHash = window.location.hash.replace('#', '');
         if (initialHash && VALID_VIEWS.includes(initialHash)) {
             navigateTo(initialHash, false);
         } else {
             navigateTo('home', false);
         }
-
-        console.log('[CineBook] CineBook SPA initialized successfully.');
     }
 
     return {
@@ -486,7 +519,7 @@ const CineBook = (function ($) {
     };
 })(jQuery);
 
-// Boot application when DOM is ready
+// Initialize when DOM is ready
 $(document).ready(function () {
     CineBook.init();
 });

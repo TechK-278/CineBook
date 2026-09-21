@@ -1,10 +1,12 @@
 /**
  * CineBook — Data Models & Mock Dataset
- * 12 Realistic Movies, Theatres, and Showtime Configuration
+ * Encapsulated Movies, Theatres, Dates, and Seat Configurations
  */
 
 const CineData = (function () {
-    const MOVIES = [
+    'use strict';
+
+    const MOVIES = Object.freeze([
         {
             id: "cb-mov-1",
             title: "Dune: Part Two",
@@ -185,9 +187,9 @@ const CineData = (function () {
             price: 290,
             featured: false
         }
-    ];
+    ]);
 
-    const THEATRES = [
+    const THEATRES = Object.freeze([
         {
             id: "th-1",
             name: "Cineplex Central",
@@ -216,21 +218,22 @@ const CineData = (function () {
             screen: "Screen 3 (Dolby 7.1)",
             showtimes: ["10:00 AM", "01:30 PM", "05:00 PM", "08:30 PM"]
         }
-    ];
+    ]);
 
-    const DEFAULT_PROFILE = {
+    const DEFAULT_PROFILE = Object.freeze({
         name: "Alex Morgan",
         email: "alex.morgan@cinebook.com",
         phone: "+91 98765 43210",
         city: "Mumbai",
         avatar: "AM"
-    };
+    });
+
+    const CONVENIENCE_FEE_RATE = 0.12; // 12% convenience fee including GST
 
     /**
      * Generate 36 standard cinema seats (Rows A to F, 6 seats each)
-     * Some randomly pre-occupied seats per session
      */
-    function getSeatLayout(seed = 1) {
+    function getSeatLayout() {
         const rows = ['A', 'B', 'C', 'D', 'E', 'F'];
         const cols = 6;
         const occupiedSet = new Set(['A3', 'A4', 'C2', 'D5', 'E1', 'E6', 'F3', 'F4']);
@@ -294,20 +297,46 @@ const CineData = (function () {
         return dates;
     }
 
+    /**
+     * Unified pricing calculation helper
+     * @param {number} ticketPrice 
+     * @param {number} seatCount 
+     * @returns {{ subtotal: number, fee: number, grandTotal: number }}
+     */
+    function calculatePricing(ticketPrice, seatCount) {
+        const count = Math.max(0, parseInt(seatCount, 10) || 0);
+        const price = Math.max(0, parseFloat(ticketPrice) || 0);
+        const subtotal = count * price;
+        const fee = count > 0 ? Math.round(subtotal * CONVENIENCE_FEE_RATE) : 0;
+        const grandTotal = subtotal + fee;
+
+        return {
+            subtotal: subtotal,
+            fee: fee,
+            grandTotal: grandTotal
+        };
+    }
+
     return {
         getMovies: function () {
-            return MOVIES;
+            return [...MOVIES];
         },
         getMovieById: function (id) {
+            if (!id) return null;
             return MOVIES.find(m => m.id === id) || null;
         },
         getTheatres: function () {
-            return THEATRES;
+            return [...THEATRES];
+        },
+        getTheatreById: function (id) {
+            if (!id) return null;
+            return THEATRES.find(t => t.id === id) || null;
         },
         getDefaultProfile: function () {
             return { ...DEFAULT_PROFILE };
         },
         getSeatLayout: getSeatLayout,
-        getUpcomingDates: getUpcomingDates
+        getUpcomingDates: getUpcomingDates,
+        calculatePricing: calculatePricing
     };
 })();
