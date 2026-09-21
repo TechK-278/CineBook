@@ -81,7 +81,9 @@ const CineBook = (function ($) {
      */
     function applyCatalogueFilters() {
         const filtered = getFilteredMovies();
-        UI.renderCatalogue(filtered);
+        const isFiltered = Boolean(appState.filter.search.trim().length > 0 || (appState.filter.genre && appState.filter.genre !== 'All'));
+        
+        UI.renderCatalogue(filtered, isFiltered);
 
         // Toggle clear search icon button
         const hasSearch = appState.filter.search.trim().length > 0;
@@ -484,7 +486,6 @@ const CineBook = (function ($) {
      */
     function init() {
         Storage.init();
-        UI.init();
 
         appState.movies = CineData.getMovies();
         appState.theatres = CineData.getTheatres();

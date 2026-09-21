@@ -57,11 +57,11 @@
                     </ul>
 
                     <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
-                        <div class="input-group input-group-sm me-2 d-none d-md-flex" style="width: 220px;">
+                        <div class="input-group input-group-sm me-2 d-none d-md-flex" style="width: 240px;">
                             <span class="input-group-text bg-cinebook-surface border-cinebook text-cinebook-muted">
                                 <i class="bi bi-search" aria-hidden="true"></i>
                             </span>
-                            <input type="text" id="navbar-search-input" class="form-control form-control-sm border-cinebook" placeholder="Search movies..." aria-label="Search movies in catalogue">
+                            <input type="text" id="navbar-search-input" class="form-control form-control-sm border-cinebook" placeholder="Search movies, genres..." aria-label="Search movies in catalogue">
                         </div>
                         <button type="button" class="btn btn-cinebook-surface btn-sm d-flex align-items-center gap-2 px-3 py-2" id="btn-profile" data-view="profile" aria-label="Open profile view">
                             <i class="bi bi-person-circle text-cinebook-accent" aria-hidden="true"></i>
@@ -152,8 +152,8 @@
             <div class="container py-5">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h2 class="h4 fw-bold text-white mb-1">Now Showing</h2>
-                        <p class="text-cinebook-secondary fs-7 mb-0">Featured blockbusters currently screening in cinemas.</p>
+                        <h2 class="h4 fw-bold text-white mb-1">Featured Tonight</h2>
+                        <p class="text-cinebook-secondary fs-7 mb-0">Popular blockbusters currently screening in cinemas.</p>
                     </div>
                     <button type="button" class="btn btn-cinebook-outline btn-sm px-3" data-view="movies">
                         View All Movies <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
@@ -171,17 +171,17 @@
                 <!-- Catalog Header -->
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom border-cinebook">
                     <div>
-                        <h1 class="h3 fw-bold text-white mb-1">Now Showing</h1>
-                        <p class="text-cinebook-secondary fs-7 mb-0">Discover movies worth watching.</p>
+                        <h1 class="h3 fw-bold text-white mb-1">Discover Movies</h1>
+                        <p class="text-cinebook-secondary fs-7 mb-0">Find your next movie night.</p>
                     </div>
 
                     <!-- Search & Sort Controls -->
                     <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
-                        <div class="input-group input-group-sm" style="min-width: 240px;">
+                        <div class="input-group input-group-sm" style="min-width: 260px;">
                             <span class="input-group-text bg-cinebook-surface border-cinebook text-cinebook-muted">
                                 <i class="bi bi-search" aria-hidden="true"></i>
                             </span>
-                            <input type="text" id="catalog-search-input" class="form-control border-cinebook" placeholder="Search title or genre..." aria-label="Search movie catalogue">
+                            <input type="text" id="catalog-search-input" class="form-control border-cinebook" placeholder="Search movies, genres or languages..." aria-label="Search movie catalogue">
                             <button class="btn btn-cinebook-surface border-cinebook d-none" id="catalog-search-clear" type="button" aria-label="Clear search input">
                                 <i class="bi bi-x" aria-hidden="true"></i>
                             </button>
@@ -189,25 +189,30 @@
 
                         <div class="d-flex align-items-center gap-2">
                             <label for="catalog-sort-select" class="form-label text-cinebook-muted fs-7 mb-0 text-nowrap">Sort by:</label>
-                            <select id="catalog-sort-select" class="form-select form-select-sm border-cinebook" style="width: 170px;" aria-label="Sort movies by">
+                            <select id="catalog-sort-select" class="form-select form-select-sm border-cinebook" style="width: 180px;" aria-label="Sort movies by">
                                 <option value="popularity">Popularity</option>
                                 <option value="rating">Rating: High to Low</option>
                                 <option value="title">Title: A to Z</option>
-                                <option value="newest">Release Date</option>
+                                <option value="newest">Release Date — Newest</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Genre Filter Pills -->
-                <div class="d-flex flex-wrap align-items-center gap-2 mb-4 pb-2" id="genre-filter-container" role="toolbar" aria-label="Filter movies by genre">
-                    <button type="button" class="btn-filter-pill active" data-genre="All">All</button>
-                    <button type="button" class="btn-filter-pill" data-genre="Action">Action</button>
-                    <button type="button" class="btn-filter-pill" data-genre="Drama">Drama</button>
-                    <button type="button" class="btn-filter-pill" data-genre="Comedy">Comedy</button>
-                    <button type="button" class="btn-filter-pill" data-genre="Thriller">Thriller</button>
-                    <button type="button" class="btn-filter-pill" data-genre="Sci-Fi">Sci-Fi</button>
-                    <button type="button" class="btn-filter-pill" data-genre="Animation">Animation</button>
+                <!-- Genre Filter Pills & Results Count -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 pb-2 pb-md-0 filter-pills-scroll" id="genre-filter-container" role="toolbar" aria-label="Filter movies by genre">
+                        <button type="button" class="btn-filter-pill active" data-genre="All">All</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Action">Action</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Drama">Drama</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Comedy">Comedy</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Thriller">Thriller</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Sci-Fi">Sci-Fi</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Animation">Animation</button>
+                    </div>
+                    <div class="text-cinebook-muted fs-7 text-nowrap" id="movies-results-count">
+                        12 movies available
+                    </div>
                 </div>
 
                 <!-- Movies Grid -->
@@ -217,12 +222,12 @@
 
                 <!-- Empty Search/Filter State -->
                 <div id="movies-empty-state" class="d-none text-center py-5 my-4">
-                    <div class="p-4 cb-surface max-w-md mx-auto">
-                        <i class="bi bi-search text-cinebook-muted fs-1 mb-3 d-block" aria-hidden="true"></i>
-                        <h2 class="text-white h5 mb-2">No movies match your search</h2>
-                        <p class="text-cinebook-secondary fs-7 mb-3">Try adjusting your keywords or clearing the genre filter.</p>
-                        <button type="button" class="btn btn-cinebook-surface btn-sm" id="btn-reset-filters">
-                            Reset Filters
+                    <div class="p-4 p-md-5 cb-surface max-w-md mx-auto">
+                        <i class="bi bi-film text-cinebook-muted fs-1 mb-3 d-block" aria-hidden="true"></i>
+                        <h2 class="text-white h5 mb-2">No movies found</h2>
+                        <p class="text-cinebook-secondary fs-7 mb-4">Try another title, genre or language.</p>
+                        <button type="button" class="btn btn-cinebook-accent btn-sm px-4 py-2" id="btn-reset-filters">
+                            Clear Filters
                         </button>
                     </div>
                 </div>

@@ -17,54 +17,6 @@ const UI = (function ($) {
 
     const FALLBACK_POSTER = 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=500&auto=format&fit=crop&q=80';
 
-    // Cached jQuery Elements
-    let $dom = {};
-
-    function initDomCache() {
-        $dom = {
-            appRoot: $('#app-root'),
-            navLinks: $('.navbar-nav .nav-link'),
-            btnProfile: $('#btn-profile'),
-            navProfileName: $('#nav-profile-name'),
-            toastContainer: $('#toast-container'),
-            moviesGrid: $('#movies-catalogue-grid'),
-            moviesEmpty: $('#movies-empty-state'),
-            featuredGrid: $('#home-featured-grid'),
-            movieDetailsBody: $('#movie-details-modal-body'),
-            movieDetailsModal: document.getElementById('movieDetailsModal'),
-            bookingBanner: $('#booking-movie-banner-container'),
-            bookingDates: $('#booking-dates-container'),
-            bookingTheatres: $('#booking-theatres-container'),
-            bookingSeatGrid: $('#booking-seat-grid'),
-            summaryMovieTitle: $('#summary-movie-title'),
-            summaryTheatre: $('#summary-theatre'),
-            summaryDate: $('#summary-date'),
-            summaryShowtime: $('#summary-showtime'),
-            summarySeats: $('#summary-seats'),
-            summarySeatCount: $('#summary-seat-count'),
-            summarySubtotal: $('#summary-subtotal'),
-            summaryFee: $('#summary-fee'),
-            summaryGrandTotal: $('#summary-grand-total'),
-            btnConfirmBooking: $('#btn-confirm-booking'),
-            confirmationPass: $('#confirmation-pass-details'),
-            bookingsContainer: $('#my-bookings-container'),
-            bookingsEmpty: $('#bookings-empty-state'),
-            profileAvatarInitials: $('#profile-avatar-initials'),
-            profileDisplayName: $('#profile-display-name'),
-            profileDisplayEmail: $('#profile-display-email'),
-            profileDisplayPhone: $('#profile-display-phone'),
-            profileDisplayCity: $('#profile-display-city'),
-            profileTotalBookings: $('#profile-total-bookings'),
-            editProfileName: $('#edit-profile-name'),
-            editProfileEmail: $('#edit-profile-email'),
-            editProfilePhone: $('#edit-profile-phone'),
-            editProfileCity: $('#edit-profile-city'),
-            custName: $('#cust-name'),
-            custEmail: $('#cust-email'),
-            custPhone: $('#cust-phone')
-        };
-    }
-
     /**
      * Escape special HTML characters to prevent XSS
      * @param {string} str 
@@ -81,13 +33,6 @@ const UI = (function ($) {
     }
 
     return {
-        /**
-         * Initialize DOM references
-         */
-        init: function () {
-            initDomCache();
-        },
-
         /**
          * Switch visible SPA view
          * @param {string} viewName 
@@ -178,12 +123,18 @@ const UI = (function ($) {
         },
 
         /**
-         * Render movie catalog grid
+         * Render movie catalog grid and dynamic results count
          * @param {Array} movies 
+         * @param {boolean} isFiltered 
          */
-        renderCatalogue: function (movies) {
+        renderCatalogue: function (movies, isFiltered = false) {
             const $grid = $('#movies-catalogue-grid');
             const $empty = $('#movies-empty-state');
+            const $count = $('#movies-results-count');
+
+            const count = movies ? movies.length : 0;
+            const countLabel = count === 1 ? '1 movie' : `${count} movies`;
+            $count.text(isFiltered ? `${countLabel} found` : `${countLabel} available`);
 
             if (!movies || movies.length === 0) {
                 $grid.empty();
