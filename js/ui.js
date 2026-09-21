@@ -1,20 +1,63 @@
 /**
  * CineBook — UI Controller & Helpers
- * Handles rendering helpers, toasts, and view coordination via jQuery
+ * Handles rendering helpers, view transitions, toasts, and view coordination via jQuery
  */
 
-const UI = (function () {
-    const $root = () => $('#app-root');
+const UI = (function ($) {
     const $toastContainer = () => $('#toast-container');
     const $modal = () => $('#cinebook-modal');
+    const $navbarCollapse = () => $('#navbarContent');
+
+    const VIEW_MAP = {
+        'home': '#homeView',
+        'movies': '#moviesView',
+        'bookings': '#bookingsView',
+        'profile': '#profileView'
+    };
 
     return {
         /**
-         * Render content into main SPA container
-         * @param {string} html 
+         * Switch visible SPA view
+         * @param {string} viewName 
          */
-        renderView: function (html) {
-            $root().html(html);
+        showView: function (viewName) {
+            const targetSelector = VIEW_MAP[viewName] || VIEW_MAP['home'];
+            const normalizedView = VIEW_MAP[viewName] ? viewName : 'home';
+
+            // Hide all views and show target view
+            $('.spa-view').addClass('d-none');
+            $(targetSelector).removeClass('d-none');
+
+            // Update navigation active states
+            this.setActiveNav(normalizedView);
+
+            // Collapse mobile navbar if open
+            const collapseEl = document.getElementById('navbarContent');
+            if (collapseEl && collapseEl.classList.contains('show')) {
+                const bsCollapse = bootstrap.Collapse.getInstance(collapseEl);
+                if (bsCollapse) {
+                    bsCollapse.hide();
+                }
+            }
+
+            // Smooth scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        },
+
+        /**
+         * Update active state on navigation links
+         * @param {string} viewName 
+         */
+        setActiveNav: function (viewName) {
+            $('.navbar-nav .nav-link').removeClass('active');
+            $(`.navbar-nav .nav-link[data-view="${viewName}"]`).addClass('active');
+
+            // Profile button active state
+            if (viewName === 'profile') {
+                $('#btn-profile').addClass('active');
+            } else {
+                $('#btn-profile').removeClass('active');
+            }
         },
 
         /**
@@ -41,21 +84,14 @@ const UI = (function () {
 
             $toastContainer().append(toastHtml);
             const toastElement = document.getElementById(toastId);
-            const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
-            toast.show();
+            if (toastElement) {
+                const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+                toast.show();
 
-            $(toastElement).on('hidden.bs.toast', function () {
-                $(this).remove();
-            });
-        },
-
-        /**
-         * Update active state on navigation links
-         * @param {string} viewName 
-         */
-        setActiveNav: function (viewName) {
-            $('.navbar-nav .nav-link').removeClass('active');
-            $(`.navbar-nav .nav-link[data-view="${viewName}"]`).addClass('active');
+                $(toastElement).on('hidden.bs.toast', function () {
+                    $(this).remove();
+                });
+            }
         },
 
         /**
@@ -80,4 +116,4 @@ const UI = (function () {
             }
         }
     };
-})();
+})(jQuery);

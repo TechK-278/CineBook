@@ -1,39 +1,80 @@
 /**
  * CineBook — Main Application Entry Point
- * Phase 0 Initialization & Event Wire-up
+ * Phase 1: SPA Routing, Event Handlers & View Management
  */
 
 const CineBook = (function ($) {
+    const VALID_VIEWS = ['home', 'movies', 'bookings', 'profile'];
     let currentView = 'home';
 
+    /**
+     * Navigate to specified SPA view
+     * @param {string} viewName 
+     * @param {boolean} updateHash 
+     */
+    function navigateTo(viewName, updateHash = true) {
+        const targetView = VALID_VIEWS.includes(viewName) ? viewName : 'home';
+        currentView = targetView;
+
+        UI.showView(targetView);
+
+        if (updateHash && window.location.hash !== `#${targetView}`) {
+            window.location.hash = targetView;
+        }
+
+        console.log(`[CineBook] Navigated to view: ${targetView}`);
+    }
+
+    /**
+     * Initialize event handlers
+     */
     function initEvents() {
-        // Navigation click handlers
+        // Global SPA navigation click handler
         $(document).on('click', '[data-view]', function (e) {
             e.preventDefault();
             const targetView = $(this).data('view');
-            navigateTo(targetView);
+            if (targetView) {
+                navigateTo(targetView);
+            }
         });
 
         // Search toggle placeholder handler
-        $('#btn-search-toggle').on('click', function () {
+        $('#btn-search-toggle').on('click', function (e) {
+            e.preventDefault();
             UI.showToast('Search feature will be available in upcoming phase.', 'info');
+        });
+
+        // Hash change handler for browser back/forward buttons
+        $(window).on('hashchange', function () {
+            const hashView = window.location.hash.replace('#', '');
+            if (hashView && hashView !== currentView && VALID_VIEWS.includes(hashView)) {
+                navigateTo(hashView, false);
+            }
         });
     }
 
-    function navigateTo(viewName) {
-        currentView = viewName;
-        UI.setActiveNav(viewName);
-        console.log(`[CineBook] Navigation triggered: ${viewName}`);
-    }
-
+    /**
+     * Initialize application state and initial view
+     */
     function init() {
-        console.log('[CineBook] Application initialized successfully (Phase 0 Baseline).');
+        console.log('[CineBook] Initializing CineBook application shell...');
         initEvents();
+
+        // Determine initial view from URL hash if available
+        const initialHash = window.location.hash.replace('#', '');
+        if (initialHash && VALID_VIEWS.includes(initialHash)) {
+            navigateTo(initialHash, false);
+        } else {
+            navigateTo('home', false);
+        }
     }
 
     return {
         init: init,
-        navigateTo: navigateTo
+        navigateTo: navigateTo,
+        getCurrentView: function () {
+            return currentView;
+        }
     };
 })(jQuery);
 

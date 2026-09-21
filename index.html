@@ -26,11 +26,11 @@
     <header>
         <nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-cinebook-nav border-bottom border-cinebook sticky-top py-2">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center gap-2" href="#" data-view="home">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#home" data-view="home">
                     <span class="brand-icon d-inline-flex align-items-center justify-content-center">
                         <i class="bi bi-film text-cinebook-accent fs-4"></i>
                     </span>
-                    <span class="fw-bold tracking-tight text-white fs-5">Cine<span class="text-cinebook-accent">Book</span></span>
+                    <span class="fw-bold tracking-tight text-white">Cine<span class="text-cinebook-accent">Book</span></span>
                 </a>
 
                 <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,29 +40,29 @@
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4 gap-lg-1">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#" data-view="home">
+                            <a class="nav-link active" href="#home" data-view="home">
                                 <i class="bi bi-house-door me-1"></i> Home
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" data-view="movies">
+                            <a class="nav-link" href="#movies" data-view="movies">
                                 <i class="bi bi-collection-play me-1"></i> Movies
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" data-view="bookings">
+                            <a class="nav-link" href="#bookings" data-view="bookings">
                                 <i class="bi bi-ticket-perforated me-1"></i> My Bookings
                             </a>
                         </li>
                     </ul>
 
-                    <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
                         <button class="btn btn-icon-nav" id="btn-search-toggle" aria-label="Search movies">
                             <i class="bi bi-search"></i>
                         </button>
                         <button class="btn btn-cinebook-surface btn-sm d-flex align-items-center gap-2 px-3 py-2" id="btn-profile" data-view="profile">
-                            <i class="bi bi-person-circle"></i>
-                            <span class="d-none d-sm-inline font-medium">Profile</span>
+                            <i class="bi bi-person-circle text-cinebook-accent"></i>
+                            <span class="font-medium">Profile</span>
                         </button>
                     </div>
                 </div>
@@ -71,40 +71,178 @@
     </header>
 
     <!-- Main SPA View Mount Point -->
-    <main id="app-root" class="app-viewport py-4">
-        <!-- SPA views will be dynamically injected here by the UI controller -->
-        <div class="container text-center py-5">
-            <div class="py-5">
-                <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-surface mb-3 border border-cinebook">
-                    <i class="bi bi-film text-cinebook-accent fs-1"></i>
-                </div>
-                <h1 class="h3 fw-bold text-white mb-2">CineBook Single Page Application</h1>
-                <p class="text-cinebook-secondary mx-auto max-w-lg mb-4">
-                    Phase 0 initialization complete. Frontend architecture, design tokens, and modular structure established.
-                </p>
-                <div class="d-inline-flex gap-2">
-                    <span class="badge bg-cinebook-surface border border-cinebook text-cinebook-secondary px-3 py-2">
-                        <i class="bi bi-check2-circle text-success me-1"></i> Architecture Ready
-                    </span>
-                    <span class="badge bg-cinebook-surface border border-cinebook text-cinebook-secondary px-3 py-2">
-                        <i class="bi bi-palette text-info me-1"></i> Design Tokens Loaded
-                    </span>
+    <main id="app-root" class="app-viewport">
+        
+        <!-- 1. HOME VIEW -->
+        <section id="homeView" class="spa-view">
+            <!-- Hero Section -->
+            <div class="hero-wrapper py-5 py-lg-6">
+                <div class="container py-4">
+                    <div class="row align-items-center g-5">
+                        <div class="col-12 col-lg-7 text-center text-lg-start">
+                            <div class="mb-3">
+                                <span class="hero-feature-pill">
+                                    <i class="bi bi-sparkles text-cinebook-accent me-2"></i> Cinema Experience Redefined
+                                </span>
+                            </div>
+                            <h1 class="hero-title text-white mb-3">
+                                Your Next Movie <span class="text-cinebook-accent">Awaits</span>
+                            </h1>
+                            <p class="lead text-cinebook-secondary mb-4 max-w-xl mx-auto mx-lg-0">
+                                Discover movies. Choose your show. Book your seats.
+                            </p>
+                            <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-3">
+                                <button class="btn btn-cinebook-accent btn-lg px-4 py-3 d-inline-flex align-items-center justify-content-center gap-2" data-view="movies">
+                                    <i class="bi bi-compass"></i> Explore Movies
+                                </button>
+                                <button class="btn btn-cinebook-surface btn-lg px-4 py-3 d-inline-flex align-items-center justify-content-center gap-2" data-view="bookings">
+                                    <i class="bi bi-ticket-perforated"></i> My Bookings
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-5">
+                            <div class="hero-ambient-card p-4 p-md-5 text-start">
+                                <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom border-cinebook">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-camera-reels text-cinebook-accent fs-4"></i>
+                                        <span class="fw-semibold text-white">Experience CineBook</span>
+                                    </div>
+                                    <span class="badge bg-cinebook-surface border border-cinebook text-cinebook-secondary">SPA Shell</span>
+                                </div>
+                                <div class="d-flex flex-column gap-3">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="p-2 rounded bg-cinebook-surface border border-cinebook text-cinebook-accent">
+                                            <i class="bi bi-film"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="text-white mb-1">Instant Movie Discovery</h6>
+                                            <p class="text-cinebook-secondary fs-7 mb-0">Browse latest releases and showtimes effortlessly.</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="p-2 rounded bg-cinebook-surface border border-cinebook text-cinebook-accent">
+                                            <i class="bi bi-grid-3x3"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="text-white mb-1">Interactive Seat Selection</h6>
+                                            <p class="text-cinebook-secondary fs-7 mb-0">Pick your favorite seats with visual screen layout.</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="p-2 rounded bg-cinebook-surface border border-cinebook text-cinebook-accent">
+                                            <i class="bi bi-ticket-detailed"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="text-white mb-1">Instant Digital Pass</h6>
+                                            <p class="text-cinebook-secondary fs-7 mb-0">Manage and access your bookings seamlessly.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- 2. MOVIES VIEW (Shell) -->
+        <section id="moviesView" class="spa-view d-none py-5">
+            <div class="container py-4">
+                <div class="cb-surface p-5 text-center mx-auto max-w-xl">
+                    <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-tertiary mb-3 border border-cinebook">
+                        <i class="bi bi-collection-play text-cinebook-accent fs-1"></i>
+                    </div>
+                    <h2 class="h3 fw-bold text-white mb-2">Movies are coming together.</h2>
+                    <p class="text-cinebook-secondary mb-4">
+                        Your movie discovery experience will appear here.
+                    </p>
+                    <button class="btn btn-cinebook-surface px-4 py-2" data-view="home">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Home
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. MY BOOKINGS VIEW (Shell) -->
+        <section id="bookingsView" class="spa-view d-none py-5">
+            <div class="container py-4">
+                <div class="cb-surface p-5 text-center mx-auto max-w-xl">
+                    <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-tertiary mb-3 border border-cinebook">
+                        <i class="bi bi-ticket-perforated text-cinebook-accent fs-1"></i>
+                    </div>
+                    <h2 class="h3 fw-bold text-white mb-2">No bookings yet</h2>
+                    <p class="text-cinebook-secondary mb-4">
+                        Your confirmed movie bookings will appear here.
+                    </p>
+                    <button class="btn btn-cinebook-accent px-4 py-2" data-view="movies">
+                        <i class="bi bi-compass me-1"></i> Explore Movies
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. PROFILE VIEW (Shell) -->
+        <section id="profileView" class="spa-view d-none py-5">
+            <div class="container py-4">
+                <div class="cb-surface p-4 p-md-5 mx-auto max-w-lg">
+                    <div class="text-center mb-4 pb-3 border-bottom border-cinebook">
+                        <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-tertiary mb-3 border border-cinebook">
+                            <i class="bi bi-person-circle text-cinebook-accent fs-1"></i>
+                        </div>
+                        <h2 class="h4 fw-bold text-white mb-1">Guest User</h2>
+                        <p class="text-cinebook-secondary fs-7 mb-0">guest@cinebook.local</p>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3 mb-4">
+                        <div class="d-flex justify-content-between align-items-center p-3 rounded bg-cinebook-tertiary border border-cinebook">
+                            <div class="d-flex align-items-center gap-2 text-cinebook-secondary fs-7">
+                                <i class="bi bi-ticket-perforated text-cinebook-accent"></i> Total Bookings
+                            </div>
+                            <span class="badge bg-cinebook-surface text-white">0</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center p-3 rounded bg-cinebook-tertiary border border-cinebook">
+                            <div class="d-flex align-items-center gap-2 text-cinebook-secondary fs-7">
+                                <i class="bi bi-shield-check text-success"></i> Account Status
+                            </div>
+                            <span class="badge bg-cinebook-surface text-white">Guest Session</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-cinebook-surface btn-sm px-3 py-2" data-view="home">
+                            <i class="bi bi-house-door me-1"></i> Return Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Application Footer -->
     <footer class="bg-cinebook-secondary border-top border-cinebook mt-auto py-4">
-        <div class="container text-center">
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-film text-cinebook-accent"></i>
-                    <span class="fw-semibold text-white">CineBook</span>
-                    <span class="text-cinebook-muted fs-7">© 2026</span>
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <div class="text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
+                        <i class="bi bi-film text-cinebook-accent"></i>
+                        <span class="fw-semibold text-white">CineBook</span>
+                    </div>
+                    <div class="text-cinebook-muted fs-7">
+                        Your movie night starts here.
+                    </div>
                 </div>
-                <div class="text-cinebook-muted fs-7">
-                    Modern Movie Discovery & Ticket Booking SPA
+
+                <div class="d-flex flex-wrap justify-content-center gap-3 gap-md-4">
+                    <a href="#home" class="footer-nav-link" data-view="home">Home</a>
+                    <a href="#movies" class="footer-nav-link" data-view="movies">Movies</a>
+                    <a href="#bookings" class="footer-nav-link" data-view="bookings">My Bookings</a>
+                    <a href="#profile" class="footer-nav-link" data-view="profile">Profile</a>
+                </div>
+
+                <div class="text-cinebook-muted fs-7 text-center text-md-end">
+                    © 2026 CineBook
                 </div>
             </div>
         </div>
