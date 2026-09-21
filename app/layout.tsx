@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
+import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CineBook v2 — Modern Cinema Discovery & Ticket Booking Platform",
-  description: "Next.js & Supabase-powered cinema reservation and ticket booking platform.",
+  title: "CineBook v2 — Movie Tickets, Showtimes & Cinema Discovery",
+  description: "Discover blockbuster movies, explore Ahmedabad cinema screens, and book movie tickets with CineBook v2.",
 };
 
 export default function RootLayout({
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.className} min-h-screen flex flex-col bg-cinebook-dark text-white`}>
-        <Navbar />
+        <Header />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

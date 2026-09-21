@@ -1,116 +1,245 @@
-import { Clapperboard } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Movie } from "@/types";
+"use client";
 
-const INITIAL_MOVIES: Movie[] = [
-  {
-    id: "a1111111-1111-1111-1111-111111111111",
-    title: "Dune: Part Two",
-    overview: "Paul Atreides unites with Chani and the Fremen while seeking revenge against the conspirators who destroyed his family.",
-    posterPath: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=500&auto=format&fit=crop&q=80",
-    genres: ["Sci-Fi", "Adventure", "Action"],
-    durationMinutes: 166,
-    rating: 8.8,
-    language: "English",
-    certificate: "UA 16+",
-    releaseDate: "2024-03-01",
-    basePrice: 320,
-    isFeatured: true,
-  },
-  {
-    id: "a2222222-2222-2222-2222-222222222222",
-    title: "Oppenheimer",
-    overview: "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb during the Manhattan Project.",
-    posterPath: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=500&auto=format&fit=crop&q=80",
-    genres: ["Drama", "History", "Thriller"],
-    durationMinutes: 180,
-    rating: 8.9,
-    language: "English",
-    certificate: "A",
-    releaseDate: "2023-07-21",
-    basePrice: 350,
-    isFeatured: true,
-  },
-  {
-    id: "a3333333-3333-3333-3333-333333333333",
-    title: "Spider-Man: Across the Spider-Verse",
-    overview: "Miles Morales catapults across the Multiverse, where he encounters a team of Spider-People charged with protecting its very existence.",
-    posterPath: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=500&auto=format&fit=crop&q=80",
-    genres: ["Animation", "Action", "Sci-Fi"],
-    durationMinutes: 140,
-    rating: 8.7,
-    language: "English",
-    certificate: "U",
-    releaseDate: "2023-06-02",
-    basePrice: 280,
-    isFeatured: true,
-  },
-  {
-    id: "a4444444-4444-4444-4444-444444444444",
-    title: "The Batman",
-    overview: "When a sadistic serial killer begins murdering key political figures in Gotham, Batman is forced to investigate the city hidden corruption.",
-    posterPath: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500&auto=format&fit=crop&q=80",
-    genres: ["Action", "Crime", "Drama"],
-    durationMinutes: 176,
-    rating: 7.9,
-    language: "English",
-    certificate: "UA 16+",
-    releaseDate: "2022-03-04",
-    basePrice: 300,
-    isFeatured: true,
-  },
-];
+import React, { useState, useMemo, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Clapperboard, Filter, X, ArrowUpDown, Search } from "lucide-react";
+import { MOVIES, MovieDetail } from "@/lib/mock-data/movies";
+import { GENRES } from "@/lib/mock-data/genres";
+import { LANGUAGES } from "@/lib/mock-data/languages";
+import { MovieCard } from "@/components/movies/MovieCard";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+
+function MoviesContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const urlSearch = searchParams.get("search") || "";
+  const urlGenre = searchParams.get("genre") || "";
+  const urlLanguage = searchParams.get("language") || "";
+  const urlCategory = searchParams.get("category") || "all";
+
+  const [search, setSearch] = useState(urlSearch);
+  const [selectedGenre, setSelectedGenre] = useState(urlGenre);
+  const [selectedLanguage, setSelectedLanguage] = useState(urlLanguage);
+  const [selectedCategory, setSelectedCategory] = useState(urlCategory);
+  const [sortBy, setSortBy] = useState<"popularity" | "rating" | "newest" | "title">("popularity");
+
+  const filteredMovies = useMemo(() => {
+    let list = [...MOVIES];
+
+    // 1. Text Search
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter(
+        (m) =>
+          m.title.toLowerCase().includes(q) ||
+          m.genres.some((g) => g.toLowerCase().includes(q)) ||
+          m.language.toLowerCase().includes(q)
+      );
+    }
+
+    // 2. Genre Filter
+    if (selectedGenre) {
+      list = list.filter((m) =>
+        m.genres.some((g) => g.toLowerCase() === selectedGenre.toLowerCase())
+      );
+    }
+
+    // 3. Language Filter
+    if (selectedLanguage) {
+      list = list.filter(
+        (m) => m.language.toLowerCase() === selectedLanguage.toLowerCase()
+      );
+    }
+
+    // 4. Category Filter (now-showing / upcoming)
+    if (selectedCategory === "now-showing") {
+      list = list.filter((m) => m.isNowShowing);
+    } else if (selectedCategory === "upcoming") {
+      list = list.filter((m) => m.isUpcoming);
+    }
+
+    // 5. Sorting
+    switch (sortBy) {
+      case "rating":
+        list.sort((a, b) => b.rating - a.rating);
+        break;
+      case "newest":
+        list.sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
+        break;
+      case "title":
+        list.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "popularity":
+      default:
+        list.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0) || b.rating - a.rating);
+        break;
+    }
+
+    return list;
+  }, [search, selectedGenre, selectedLanguage, selectedCategory, sortBy]);
+
+  const hasActiveFilters = Boolean(search || selectedGenre || selectedLanguage || selectedCategory !== "all");
+
+  const handleClearAll = () => {
+    setSearch("");
+    setSelectedGenre("");
+    setSelectedLanguage("");
+    setSelectedCategory("all");
+    router.push("/movies");
+  };
+
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-cinebook-border mb-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+            <Clapperboard className="h-7 w-7 text-cinebook-accent" />
+            Explore Movies in Ahmedabad
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+            Browse current theatrical screenings and upcoming blockbusters
+          </p>
+        </div>
+
+        {/* Category Toggle Tabs */}
+        <div className="flex items-center gap-1.5 rounded-xl bg-cinebook-surface p-1 border border-cinebook-border self-start md:self-auto">
+          {[
+            { id: "all", label: "All Movies" },
+            { id: "now-showing", label: "Now Showing" },
+            { id: "upcoming", label: "Upcoming" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setSelectedCategory(tab.id)}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
+                selectedCategory === tab.id
+                  ? "bg-cinebook-accent text-white"
+                  : "text-zinc-400 hover:text-white"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Filter & Search Bar Controls */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-6">
+        {/* Genre Pill Filter */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
+          <button
+            type="button"
+            onClick={() => setSelectedGenre("")}
+            className={cn(
+              "shrink-0 rounded-full px-3 py-1 text-xs font-semibold transition-colors border",
+              !selectedGenre
+                ? "bg-cinebook-accent text-white border-cinebook-accent"
+                : "bg-cinebook-surface text-zinc-300 border-cinebook-border hover:border-zinc-600"
+            )}
+          >
+            All
+          </button>
+          {GENRES.map((g) => (
+            <button
+              key={g.id}
+              type="button"
+              onClick={() => setSelectedGenre(selectedGenre === g.id ? "" : g.id)}
+              className={cn(
+                "shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors border",
+                selectedGenre.toLowerCase() === g.id.toLowerCase()
+                  ? "bg-cinebook-accent text-white border-cinebook-accent"
+                  : "bg-cinebook-surface text-zinc-300 border-cinebook-border hover:border-zinc-600"
+              )}
+            >
+              {g.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Language & Sort Controls */}
+        <div className="flex items-center gap-2 self-end lg:self-auto shrink-0">
+          {/* Language Selector */}
+          <select
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            className="rounded-lg border border-cinebook-border bg-cinebook-surface px-3 py-1.5 text-xs text-white focus:border-cinebook-accent focus:outline-none"
+            aria-label="Filter by language"
+          >
+            <option value="">All Languages</option>
+            {LANGUAGES.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Sort Selector */}
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="rounded-lg border border-cinebook-border bg-cinebook-surface px-3 py-1.5 text-xs text-white focus:border-cinebook-accent focus:outline-none"
+            aria-label="Sort movies"
+          >
+            <option value="popularity">Popularity</option>
+            <option value="rating">Top Rated</option>
+            <option value="newest">Release Date</option>
+            <option value="title">Title (A-Z)</option>
+          </select>
+
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearAll}
+              className="h-8 text-xs text-zinc-400 hover:text-white gap-1 px-2"
+            >
+              <X className="h-3.5 w-3.5" />
+              Clear
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Results Count */}
+      <div className="flex items-center justify-between text-xs text-zinc-400 mb-4">
+        <span>
+          Showing <strong className="text-white">{filteredMovies.length}</strong> movies
+        </span>
+      </div>
+
+      {/* Movie Grid */}
+      {filteredMovies.length > 0 ? (
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          {filteredMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-cinebook-border bg-cinebook-surface/40 p-16 text-center">
+          <Clapperboard className="h-10 w-10 text-zinc-500 mx-auto mb-3" />
+          <h3 className="text-base font-semibold text-white">No Movies Found</h3>
+          <p className="text-xs text-zinc-400 mt-1 max-w-sm mx-auto">
+            Try adjusting your search query, genre tags, or language filters.
+          </p>
+          <Button variant="outline" size="sm" onClick={handleClearAll} className="mt-4">
+            Reset Filters
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function MoviesPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-cinebook-border pb-6 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-            <Clapperboard className="h-8 w-8 text-cinebook-accent" />
-            Movie Catalogue
-          </h1>
-          <p className="text-sm text-zinc-400 mt-1">
-            Now screening in theatres & upcoming blockbusters
-          </p>
-        </div>
-        <Badge variant="secondary" className="self-start md:self-auto">
-          {INITIAL_MOVIES.length} Movies Available
-        </Badge>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {INITIAL_MOVIES.map((movie) => (
-          <Card key={movie.id} className="overflow-hidden flex flex-col group hover:border-zinc-700 transition-colors">
-            <div className="aspect-[2/3] relative w-full overflow-hidden bg-cinebook-dark">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={movie.posterPath}
-                alt={`Poster of ${movie.title}`}
-                className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute top-2 right-2 bg-cinebook-dark/80 backdrop-blur px-2 py-0.5 rounded text-xs font-semibold text-yellow-400 border border-cinebook-border">
-                ★ {movie.rating}
-              </div>
-            </div>
-            <CardContent className="p-4 flex-1 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between text-xs text-zinc-400 mb-1">
-                  <span>{movie.genres.join(", ")}</span>
-                  <span>{movie.durationMinutes}m</span>
-                </div>
-                <h2 className="font-semibold text-white text-base line-clamp-1">{movie.title}</h2>
-                <p className="text-xs text-zinc-400 line-clamp-2 mt-1">{movie.overview}</p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-cinebook-border flex items-center justify-between">
-                <span className="text-sm font-semibold text-white">From ₹{movie.basePrice}</span>
-                <Badge variant="outline">{movie.certificate}</Badge>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+    <Suspense fallback={<div className="p-12 text-center text-zinc-400">Loading movie catalogue...</div>}>
+      <MoviesContent />
+    </Suspense>
   );
 }
