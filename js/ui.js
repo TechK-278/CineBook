@@ -246,13 +246,13 @@ const UI = (function ($) {
             const bannerHtml = `
                 <div class="cb-surface p-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 shadow">
                     <div class="d-flex align-items-center gap-3">
-                        <img src="${movie.poster}" alt="${safeTitle}" class="rounded border border-cinebook" style="width: 64px; height: 86px; object-fit: cover;" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
+                        <img src="${movie.poster}" alt="Poster of ${safeTitle}" class="rounded border border-cinebook" style="width: 64px; height: 86px; object-fit: cover;" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <span class="badge bg-cinebook-accent text-white fs-8">${escapeHtml(movie.certificate)}</span>
                                 <span class="text-cinebook-muted fs-8">${escapeHtml(movie.duration)} • ${escapeHtml(movie.language)}</span>
                             </div>
-                            <h2 class="h4 fw-bold text-white mb-1">${safeTitle}</h2>
+                            <h1 class="h4 fw-bold text-white mb-1">${safeTitle}</h1>
                             <p class="text-cinebook-secondary fs-8 mb-0">${genresHtml} • <i class="bi bi-star-fill text-warning me-1" aria-hidden="true"></i>${movie.rating}/10</p>
                         </div>
                     </div>
@@ -398,9 +398,9 @@ const UI = (function ($) {
                         <span class="badge bg-cinebook-accent text-white font-monospace">${booking.id}</span>
                     </div>
                     <div class="d-flex gap-3 align-items-center mb-3">
-                        <img src="${booking.poster}" alt="${safeTitle}" class="rounded border border-cinebook" style="width: 54px; height: 72px; object-fit: cover;" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
+                        <img src="${booking.poster}" alt="Poster of ${safeTitle}" class="rounded border border-cinebook" style="width: 54px; height: 72px; object-fit: cover;" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
                         <div>
-                            <h5 class="text-white mb-1 fw-bold">${safeTitle}</h5>
+                            <h2 class="h5 text-white mb-1 fw-bold">${safeTitle}</h2>
                             <div class="text-cinebook-secondary fs-8">${escapeHtml(booking.theatre)}</div>
                             <div class="text-cinebook-muted fs-8">${booking.date} • ${booking.showtime}</div>
                         </div>
@@ -472,7 +472,7 @@ const UI = (function ($) {
                     <div class="booking-card ${isConfirmed ? '' : 'is-cancelled'} p-3 p-md-4">
                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                             <div class="d-flex align-items-start gap-3 flex-grow-1">
-                                <img src="${b.poster}" alt="${safeTitle}" class="booking-movie-poster" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
+                                <img src="${b.poster}" alt="Poster of ${safeTitle}" class="booking-movie-poster" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
                                 <div class="flex-grow-1">
                                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                                         <span class="badge bg-cinebook-tertiary text-white border border-cinebook font-monospace fs-8">${b.id}</span>
