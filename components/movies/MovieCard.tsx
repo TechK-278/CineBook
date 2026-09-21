@@ -2,12 +2,13 @@ import React from "react";
 import Link from "next/link";
 import { Star, Ticket } from "lucide-react";
 import { MovieDetail } from "@/lib/mock-data/movies";
+import { CineMovie } from "@/lib/tmdb/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface MovieCardProps {
-  movie: MovieDetail;
+  movie: CineMovie | MovieDetail;
   className?: string;
   showBookButton?: boolean;
 }

@@ -2,6 +2,7 @@
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Film, Eye, EyeOff, Lock, Mail, User, ArrowRight, AlertCircle, CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -131,8 +132,15 @@ function SignupForm() {
     <div className="mx-auto flex min-h-[calc(100vh-16rem)] w-full max-w-md items-center justify-center px-4 py-12">
       <Card className="w-full border-cinebook-border bg-cinebook-surface/90 shadow-2xl backdrop-blur">
         <CardHeader className="text-center space-y-2 pb-6">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-cinebook-accent text-white shadow-lg mb-2">
-            <Film className="h-6 w-6" />
+          <div className="mx-auto relative flex h-14 w-14 items-center justify-center rounded-2xl overflow-hidden shadow-lg mb-2">
+            <Image
+              src="/logo.png"
+              alt="CineBook"
+              width={56}
+              height={56}
+              className="h-full w-full object-contain"
+              priority
+            />
           </div>
           <CardTitle className="text-2xl font-extrabold tracking-tight text-white">
             Create Your Account

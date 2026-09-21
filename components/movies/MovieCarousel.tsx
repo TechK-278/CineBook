@@ -3,10 +3,11 @@
 import React, { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { MovieDetail } from "@/lib/mock-data/movies";
+import { CineMovie } from "@/lib/tmdb/types";
 import { MovieCard } from "./MovieCard";
 
 interface MovieCarouselProps {
-  movies: MovieDetail[];
+  movies: (CineMovie | MovieDetail)[];
 }
 
 export function MovieCarousel({ movies }: MovieCarouselProps) {

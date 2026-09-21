@@ -2,6 +2,7 @@
 
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Film, Eye, EyeOff, Lock, Mail, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -62,18 +63,12 @@ function LoginForm() {
       });
 
       if (error) {
-        if (error.message.toLowerCase().includes("invalid login credentials")) {
-          setErrorMessage("Email or password is incorrect. Please check your credentials.");
-        } else if (error.message.toLowerCase().includes("email not confirmed")) {
-          setErrorMessage("Please confirm your email address before signing in.");
-        } else {
-          setErrorMessage(error.message || "Unable to sign in. Please try again.");
-        }
+        setErrorMessage(error.message || "Invalid email or password.");
         setIsLoading(false);
         return;
       }
 
-      if (data.session) {
+      if (data.user) {
         router.push(nextUrl);
         router.refresh();
       }
@@ -87,8 +82,15 @@ function LoginForm() {
     <div className="mx-auto flex min-h-[calc(100vh-16rem)] w-full max-w-md items-center justify-center px-4 py-12">
       <Card className="w-full border-cinebook-border bg-cinebook-surface/90 shadow-2xl backdrop-blur">
         <CardHeader className="text-center space-y-2 pb-6">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-cinebook-accent text-white shadow-lg mb-2">
-            <Film className="h-6 w-6" />
+          <div className="mx-auto relative flex h-14 w-14 items-center justify-center rounded-2xl overflow-hidden shadow-lg mb-2">
+            <Image
+              src="/logo.png"
+              alt="CineBook"
+              width={56}
+              height={56}
+              className="h-full w-full object-contain"
+              priority
+            />
           </div>
           <CardTitle className="text-2xl font-extrabold tracking-tight text-white">
             Welcome to <span className="text-cinebook-accent">CineBook</span>

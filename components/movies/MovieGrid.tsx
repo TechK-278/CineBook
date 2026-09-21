@@ -1,9 +1,10 @@
 import React from "react";
 import { MovieDetail } from "@/lib/mock-data/movies";
+import { CineMovie } from "@/lib/tmdb/types";
 import { MovieCard } from "./MovieCard";
 
 interface MovieGridProps {
-  movies: MovieDetail[];
+  movies: (CineMovie | MovieDetail)[];
 }
 
 export function MovieGrid({ movies }: MovieGridProps) {

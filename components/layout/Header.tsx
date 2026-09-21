@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Film,
@@ -121,9 +122,16 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cinebook-accent text-white shadow-md transition-transform group-hover:scale-105">
-              <Film className="h-5 w-5" />
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center shrink-0 overflow-hidden rounded-xl transition-transform group-hover:scale-105">
+              <Image
+                src="/logo.png"
+                alt="CineBook"
+                width={36}
+                height={36}
+                className="h-full w-full object-contain"
+                priority
+              />
             </div>
             <span className="text-xl font-black tracking-wider text-white">
               CINE<span className="text-cinebook-accent">BOOK</span>

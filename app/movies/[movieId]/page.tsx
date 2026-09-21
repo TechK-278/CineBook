@@ -1,20 +1,23 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import {
   Star,
   Clock,
   Calendar,
-  Shield,
   Film,
   MapPin,
   ChevronLeft,
   Ticket,
-  Sparkles,
   Info,
+  User,
+  Clapperboard,
 } from "lucide-react";
-import { getMovieById, MOVIES, CINEMAS, MOCK_DATES, MOCK_SHOWTIMES_SAMPLE } from "@/lib/mock-data";
+import { getMovieDetails } from "@/lib/tmdb/movies";
+import { CINEMAS, MOCK_DATES, MOCK_SHOWTIMES_SAMPLE } from "@/lib/mock-data";
 import { ShowtimeButton } from "@/components/movies/ShowtimeButton";
+import { TrailerModal } from "@/components/movies/TrailerModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,40 +28,61 @@ interface MovieDetailsPageProps {
   }>;
 }
 
-export async function generateStaticParams() {
-  return MOVIES.map((movie) => ({
-    movieId: movie.id,
-  }));
+export async function generateMetadata({
+  params,
+}: MovieDetailsPageProps): Promise<Metadata> {
+  const { movieId } = await params;
+  const movie = await getMovieDetails(movieId);
+
+  if (!movie) {
+    return {
+      title: "Movie Not Found | CineBook",
+      description: "Explore theatrical movies and cinema tickets on CineBook.",
+    };
+  }
+
+  return {
+    title: `${movie.title} (${movie.releaseYear}) — Tickets & Showtimes | CineBook`,
+    description: movie.overview.slice(0, 160),
+    openGraph: {
+      title: `${movie.title} | CineBook`,
+      description: movie.overview.slice(0, 160),
+      images: movie.backdropPath ? [{ url: movie.backdropPath }] : [],
+    },
+  };
 }
 
 export default async function MovieDetailsPage({ params }: MovieDetailsPageProps) {
   const { movieId } = await params;
-  const movie = getMovieById(movieId);
+  const movie = await getMovieDetails(movieId);
 
   if (!movie) {
     notFound();
   }
 
-  // Filter cinemas that have this movie playing (demo data)
-  const availableCinemas = CINEMAS.filter((c) => c.cityId === "ahmedabad");
+  // Filter cinemas that have this movie playing in Ahmedabad
+  const ahmedabadCinemas = CINEMAS.filter((c) => c.cityId === "ahmedabad");
+
+  // Determine if this movie has active CineBook theatrical showtimes
+  const hasShowtimes = movie.isNowShowing;
 
   return (
     <div className="pb-20">
-      {/* 1. Backdrop Banner Header */}
-      <div className="relative w-full bg-cinebook-dark border-b border-cinebook-border overflow-hidden">
+      {/* 1. Hero Backdrop Banner */}
+      <div className="relative w-full bg-cinebook-dark border-b border-cinebook-border overflow-hidden min-h-[440px]">
         {/* Backdrop Image with gradient overlay */}
-        <div className="absolute inset-0 z-0 opacity-25">
+        <div className="absolute inset-0 z-0 opacity-20">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={movie.backdropPath || movie.posterPath}
             alt=""
             className="h-full w-full object-cover filter blur-sm scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-cinebook-dark via-cinebook-dark/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-cinebook-dark via-cinebook-dark/85 to-transparent" />
         </div>
 
         {/* Content Container */}
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <Link
             href="/movies"
             className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-white mb-6 transition-colors"
@@ -68,16 +92,16 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
 
           <div className="flex flex-col md:flex-row gap-8 items-start">
             {/* Poster Card */}
-            <div className="w-48 sm:w-60 shrink-0 overflow-hidden rounded-2xl border-2 border-cinebook-border shadow-2xl bg-cinebook-surface">
+            <div className="w-48 sm:w-64 shrink-0 overflow-hidden rounded-2xl border-2 border-cinebook-border shadow-2xl bg-cinebook-surface">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={movie.posterPath}
                 alt={`Poster of ${movie.title}`}
-                className="h-auto w-full object-cover"
+                className="h-auto w-full object-cover aspect-[2/3]"
               />
             </div>
 
-            {/* Movie Info */}
+            {/* Movie Metadata Info */}
             <div className="flex-1 space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="accent" className="font-bold">
@@ -94,22 +118,56 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
                 <span className="text-xs text-zinc-400">
                   {movie.language} • {movie.durationMinutes} mins
                 </span>
+                {movie.isUpcoming && (
+                  <span className="rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 text-xs font-semibold">
+                    Upcoming Release
+                  </span>
+                )}
               </div>
 
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                {movie.title}
-              </h1>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  {movie.title}
+                </h1>
+                {movie.tagline && (
+                  <p className="text-xs sm:text-sm text-zinc-400 italic mt-1 font-medium">
+                    &ldquo;{movie.tagline}&rdquo;
+                  </p>
+                )}
+              </div>
 
-              {/* Rating and Genre */}
+              {/* Rating, Genres, Release Date */}
               <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-300">
                 <div className="flex items-center gap-1.5 rounded-lg bg-cinebook-surface/80 border border-cinebook-border px-3 py-1.5 font-semibold text-white">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span>{movie.rating} / 10</span>
-                  <span className="text-xs text-zinc-400 font-normal">(User Rating)</span>
+                  {movie.voteCount > 0 && (
+                    <span className="text-xs text-zinc-400 font-normal">
+                      ({movie.voteCount.toLocaleString()} votes)
+                    </span>
+                  )}
                 </div>
                 <span>{movie.genres.join(" • ")}</span>
                 <span>•</span>
                 <span className="text-zinc-400">{movie.releaseDate}</span>
+              </div>
+
+              {/* Action Buttons: Trailer & Book */}
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                {hasShowtimes && (
+                  <a href="#showtimes">
+                    <Button className="gap-2 text-xs sm:text-sm font-semibold shadow-lg">
+                      <Ticket className="h-4 w-4" />
+                      <span>Book Tickets</span>
+                    </Button>
+                  </a>
+                )}
+                {movie.trailerYoutubeId && (
+                  <TrailerModal
+                    trailerYoutubeId={movie.trailerYoutubeId}
+                    movieTitle={movie.title}
+                  />
+                )}
               </div>
 
               {/* Synopsis */}
@@ -122,18 +180,44 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
                 </p>
               </div>
 
-              {/* Director & Cast */}
-              <div className="pt-2 flex flex-wrap gap-6 text-xs border-t border-cinebook-border/60">
-                <div>
-                  <span className="text-zinc-500 block">Director</span>
-                  <span className="font-semibold text-white">{movie.director}</span>
+              {/* Director & Top Cast */}
+              <div className="pt-4 border-t border-cinebook-border/60">
+                <div className="text-xs text-zinc-400 mb-2">
+                  <strong className="text-white">Director:</strong> {movie.director}
                 </div>
-                <div>
-                  <span className="text-zinc-500 block">Starring</span>
-                  <span className="font-semibold text-white">
-                    {movie.cast.map((c) => c.name).join(", ")}
-                  </span>
-                </div>
+
+                {movie.cast && movie.cast.length > 0 && (
+                  <div>
+                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">
+                      Top Cast
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-w-2xl">
+                      {movie.cast.map((member) => (
+                        <div
+                          key={member.id}
+                          className="flex items-center gap-2.5 rounded-lg bg-cinebook-surface/60 border border-cinebook-border p-2"
+                        >
+                          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-zinc-800 border border-cinebook-border">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={member.image}
+                              alt={member.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1 text-left">
+                            <div className="text-xs font-semibold text-white truncate">
+                              {member.name}
+                            </div>
+                            <div className="text-[11px] text-zinc-400 truncate">
+                              {member.role}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -148,71 +232,101 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
             Available Cinemas & Showtimes in Ahmedabad
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            Select a cinema and preferred showtime slot to proceed with booking
+            CineBook operational show schedule & auditorium reservations
           </p>
         </div>
 
-        {/* Date Selector Bar */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-cinebook-border">
-          {MOCK_DATES.map((dateObj, i) => (
-            <button
-              key={i}
-              type="button"
-              className={`flex flex-col items-center justify-center rounded-xl border px-4 py-2.5 min-w-[85px] transition-all ${
-                i === 0
-                  ? "bg-cinebook-accent text-white border-cinebook-accent shadow-md"
-                  : "bg-cinebook-surface text-zinc-300 border-cinebook-border hover:border-zinc-600 hover:text-white"
-              }`}
-            >
-              <span className="text-xs font-medium">{dateObj.day}</span>
-              <span className="text-sm font-bold">{dateObj.date}</span>
-            </button>
-          ))}
-        </div>
+        {hasShowtimes ? (
+          <>
+            {/* Date Selector Bar */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-cinebook-border scrollbar-none">
+              {MOCK_DATES.map((dateObj, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={`flex flex-col items-center justify-center rounded-xl border px-4 py-2.5 min-w-[85px] transition-all ${
+                    i === 0
+                      ? "bg-cinebook-accent text-white border-cinebook-accent shadow-md"
+                      : "bg-cinebook-surface text-zinc-300 border-cinebook-border hover:border-zinc-600 hover:text-white"
+                  }`}
+                >
+                  <span className="text-xs font-medium">{dateObj.day}</span>
+                  <span className="text-sm font-bold">{dateObj.date}</span>
+                </button>
+              ))}
+            </div>
 
-        {/* Cinema Showtimes Listing */}
-        <div className="space-y-6">
-          {availableCinemas.map((cinema) => (
-            <Card key={cinema.id} className="p-5 sm:p-6 border border-cinebook-border bg-cinebook-surface">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-cinebook-border/80">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Link
-                      href={`/cinemas/${cinema.id}`}
-                      className="text-base sm:text-lg font-bold text-white hover:text-cinebook-accent transition-colors"
-                    >
-                      {cinema.name}
-                    </Link>
-                    <Badge variant="outline" className="text-[10px]">
-                      {cinema.chain}
-                    </Badge>
+            {/* Cinema Showtimes Listing */}
+            <div className="space-y-6">
+              {ahmedabadCinemas.map((cinema) => (
+                <Card
+                  key={cinema.id}
+                  className="p-5 sm:p-6 border border-cinebook-border bg-cinebook-surface"
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-cinebook-border/80">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Link
+                          href={`/cinemas/${cinema.id}`}
+                          className="text-base sm:text-lg font-bold text-white hover:text-cinebook-accent transition-colors"
+                        >
+                          {cinema.name}
+                        </Link>
+                        <Badge variant="outline" className="text-[10px]">
+                          {cinema.chain}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                        <MapPin className="h-3.5 w-3.5 text-cinebook-accent" />
+                        <span>{cinema.locationArea}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-zinc-400">
+                      <Info className="h-3.5 w-3.5" />
+                      <span>Cancellation Available</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                    <MapPin className="h-3.5 w-3.5 text-cinebook-accent" />
-                    <span>{cinema.locationArea}</span>
+
+                  {/* Showtimes Grid for this cinema */}
+                  <div className="pt-4">
+                    <div className="text-xs font-semibold text-zinc-400 mb-3 uppercase tracking-wider">
+                      Available Screenings
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      {MOCK_SHOWTIMES_SAMPLE.map((slot) => (
+                        <ShowtimeButton key={slot.id} slot={slot} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-2 text-xs text-zinc-400">
-                  <Info className="h-3.5 w-3.5" />
-                  <span>Cancellation Available</span>
-                </div>
-              </div>
-
-              {/* Showtimes Grid for this cinema */}
-              <div className="pt-4">
-                <div className="text-xs font-semibold text-zinc-400 mb-3 uppercase tracking-wider">
-                  Available Screenings
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {MOCK_SHOWTIMES_SAMPLE.map((slot) => (
-                    <ShowtimeButton key={slot.id} slot={slot} />
-                  ))}
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+                </Card>
+              ))}
+            </div>
+          </>
+        ) : (
+          /* Empty State for TMDB movies that do not have CineBook showtimes yet */
+          <div className="rounded-2xl border border-dashed border-cinebook-border bg-cinebook-surface/40 p-12 text-center">
+            <Clapperboard className="h-10 w-10 text-zinc-500 mx-auto mb-3" />
+            <h3 className="text-base font-semibold text-white">
+              No CineBook Showtimes Currently Scheduled
+            </h3>
+            <p className="text-xs text-zinc-400 mt-1 max-w-md mx-auto">
+              This title is part of TMDB discovery. Screenings have not been scheduled yet in CineBook multiplexes. Check back closer to release or explore active theatrical screenings.
+            </p>
+            <div className="mt-6 flex justify-center gap-3">
+              <Link href="/movies?category=now-showing">
+                <Button variant="default" size="sm" className="text-xs">
+                  Browse Now Showing Movies
+                </Button>
+              </Link>
+              <Link href="/cinemas">
+                <Button variant="outline" size="sm" className="text-xs">
+                  Explore Multiplexes
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

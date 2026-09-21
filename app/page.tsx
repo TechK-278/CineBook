@@ -11,12 +11,14 @@ import {
   Star,
 } from "lucide-react";
 import {
-  getRecommendedMovies,
-  getNowShowingMovies,
-  getUpcomingMovies,
   getCinemasByCity,
   OFFERS,
 } from "@/lib/mock-data";
+import {
+  getPopularMovies,
+  getNowPlayingMovies,
+  getUpcomingMovies,
+} from "@/lib/tmdb/movies";
 import { MovieCarousel } from "@/components/movies/MovieCarousel";
 import { MovieGrid } from "@/components/movies/MovieGrid";
 import { CinemaCard } from "@/components/cinemas/CinemaCard";
@@ -27,10 +29,12 @@ import { OffersCard } from "@/components/discovery/OffersCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export default function HomePage() {
-  const recommendedMovies = getRecommendedMovies();
-  const nowShowingMovies = getNowShowingMovies().slice(0, 8);
-  const upcomingMovies = getUpcomingMovies();
+export default async function HomePage() {
+  const [recommendedMovies, nowShowingMovies, upcomingMovies] = await Promise.all([
+    getPopularMovies(),
+    getNowPlayingMovies(),
+    getUpcomingMovies(),
+  ]);
   const popularCinemas = getCinemasByCity("ahmedabad").slice(0, 4);
 
   return (

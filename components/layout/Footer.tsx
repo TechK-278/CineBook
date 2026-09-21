@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Film, Clapperboard, Tag, Shield, HelpCircle, Heart } from "lucide-react";
 
 export function Footer() {
@@ -9,9 +10,15 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-cinebook-border">
           {/* Col 1: Brand */}
           <div className="space-y-3 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 text-white">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cinebook-accent text-white">
-                <Film className="h-4 w-4" />
+            <Link href="/" className="flex items-center gap-2.5 text-white group">
+              <div className="relative flex h-8 w-8 items-center justify-center shrink-0 overflow-hidden rounded-xl">
+                <Image
+                  src="/logo.png"
+                  alt="CineBook"
+                  width={32}
+                  height={32}
+                  className="h-full w-full object-contain"
+                />
               </div>
               <span className="text-lg font-black tracking-wider">
                 CINE<span className="text-cinebook-accent">BOOK</span>

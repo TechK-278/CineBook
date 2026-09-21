@@ -2,7 +2,9 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, Film, MapPin, Sparkles } from "lucide-react";
+import { Search, X, Film, MapPin, Loader2 } from "lucide-react";
+import { CinemaDetail } from "@/lib/mock-data/cinemas";
+import { CineMovie } from "@/lib/tmdb/types";
 import { searchEntities } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +12,11 @@ interface SearchBarProps {
   className?: string;
   placeholder?: string;
   variant?: "header" | "hero";
+}
+
+interface SearchResultsState {
+  movies: CineMovie[];
+  cinemas: CinemaDetail[];
 }
 
 export function SearchBar({
@@ -20,11 +27,12 @@ export function SearchBar({
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [results, setResults] = useState<SearchResultsState>({ movies: [], cinemas: [] });
   const containerRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const results = searchEntities(query);
-  const hasResults = results.movies.length > 0 || results.cinemas.length > 0;
-
+  // Close dropdown on click outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -34,6 +42,62 @@ export function SearchBar({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Debounced search effect
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      setResults({ movies: [], cinemas: [] });
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Cancel any ongoing fetch
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/movies/search?q=${encodeURIComponent(trimmed)}`, {
+          signal: controller.signal,
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setResults({
+            movies: data.movies || [],
+            cinemas: data.cinemas || [],
+          });
+        } else {
+          // Fallback to local synchronous search
+          const local = searchEntities(trimmed);
+          setResults({
+            movies: (local.movies as any[]) || [],
+            cinemas: local.cinemas || [],
+          });
+        }
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          const local = searchEntities(trimmed);
+          setResults({
+            movies: (local.movies as any[]) || [],
+            cinemas: local.cinemas || [],
+          });
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }, 280);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
 
   const handleSelectMovie = (id: string) => {
     setIsOpen(false);
@@ -55,6 +119,8 @@ export function SearchBar({
     }
   };
 
+  const hasResults = results.movies.length > 0 || results.cinemas.length > 0;
+
   return (
     <div className={cn("relative w-full", className)} ref={containerRef}>
       <form onSubmit={handleSubmit} className="relative w-full">
@@ -62,13 +128,23 @@ export function SearchBar({
           Search movies, cinemas, genres
         </label>
         <div className="relative flex items-center">
-          <Search
-            className={cn(
-              "absolute left-3.5 text-zinc-400 pointer-events-none",
-              variant === "hero" ? "h-5 w-5" : "h-4 w-4"
-            )}
-            aria-hidden="true"
-          />
+          {isLoading ? (
+            <Loader2
+              className={cn(
+                "absolute left-3.5 text-cinebook-accent animate-spin pointer-events-none",
+                variant === "hero" ? "h-5 w-5" : "h-4 w-4"
+              )}
+              aria-hidden="true"
+            />
+          ) : (
+            <Search
+              className={cn(
+                "absolute left-3.5 text-zinc-400 pointer-events-none",
+                variant === "hero" ? "h-5 w-5" : "h-4 w-4"
+              )}
+              aria-hidden="true"
+            />
+          )}
           <input
             id={`search-input-${variant}`}
             type="text"
@@ -106,17 +182,22 @@ export function SearchBar({
       {/* Autocomplete Dropdown */}
       {isOpen && query.trim() && (
         <div className="absolute left-0 top-full mt-2 w-full rounded-xl border border-cinebook-border bg-cinebook-surface p-2 shadow-2xl z-50 max-h-96 overflow-y-auto animate-in fade-in-0 zoom-in-95 duration-150">
-          {hasResults ? (
+          {isLoading && !hasResults ? (
+            <div className="py-6 flex items-center justify-center gap-2 text-xs text-zinc-400">
+              <Loader2 className="h-4 w-4 animate-spin text-cinebook-accent" />
+              <span>Searching live movie catalogue...</span>
+            </div>
+          ) : hasResults ? (
             <div className="space-y-3 p-1">
               {/* Matched Movies */}
               {results.movies.length > 0 && (
                 <div>
                   <div className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
                     <Film className="h-3.5 w-3.5 text-cinebook-accent" />
-                    Movies
+                    Live Movies
                   </div>
                   <div className="space-y-1 mt-1">
-                    {results.movies.slice(0, 4).map((movie) => (
+                    {results.movies.slice(0, 5).map((movie) => (
                       <button
                         key={movie.id}
                         type="button"
@@ -127,7 +208,7 @@ export function SearchBar({
                         <img
                           src={movie.posterPath}
                           alt=""
-                          className="h-10 w-7 rounded object-cover border border-cinebook-border"
+                          className="h-10 w-7 rounded object-cover border border-cinebook-border shrink-0"
                         />
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-semibold text-white group-hover:text-cinebook-accent transition-colors truncate">
@@ -149,10 +230,10 @@ export function SearchBar({
 
               {/* Matched Cinemas */}
               {results.cinemas.length > 0 && (
-                <div className="pt-2 border-t border-cinebook-border">
+                <div className={results.movies.length > 0 ? "pt-2 border-t border-cinebook-border" : ""}>
                   <div className="flex items-center gap-1.5 px-2 py-1 text-xs font-semibold text-zinc-400 uppercase tracking-wider">
                     <MapPin className="h-3.5 w-3.5 text-cinebook-accent" />
-                    Cinemas
+                    CineBook Multiplexes
                   </div>
                   <div className="space-y-1 mt-1">
                     {results.cinemas.slice(0, 3).map((cinema) => (
