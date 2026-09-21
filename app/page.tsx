@@ -11,7 +11,6 @@ import {
   Star,
 } from "lucide-react";
 import {
-  getCinemasByCity,
   OFFERS,
 } from "@/lib/mock-data";
 import {
@@ -19,6 +18,7 @@ import {
   getNowPlayingMovies,
   getUpcomingMovies,
 } from "@/lib/tmdb/movies";
+import { getActiveTheatres } from "@/lib/supabase/theatres";
 import { MovieCarousel } from "@/components/movies/MovieCarousel";
 import { MovieGrid } from "@/components/movies/MovieGrid";
 import { CinemaCard } from "@/components/cinemas/CinemaCard";
@@ -30,12 +30,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export default async function HomePage() {
-  const [recommendedMovies, nowShowingMovies, upcomingMovies] = await Promise.all([
+  const [recommendedMovies, nowShowingMovies, upcomingMovies, allCinemas] = await Promise.all([
     getPopularMovies(),
     getNowPlayingMovies(),
     getUpcomingMovies(),
+    getActiveTheatres({ city: "ahmedabad" }),
   ]);
-  const popularCinemas = getCinemasByCity("ahmedabad").slice(0, 4);
+  const popularCinemas = allCinemas.slice(0, 4);
 
   return (
     <div className="flex flex-col gap-14 pb-20">

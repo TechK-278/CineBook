@@ -45,24 +45,44 @@ export interface Movie {
   createdAt?: string;
 }
 
+export type ShowStatus = "scheduled" | "cancelled" | "completed";
+
 export interface Theatre {
   id: string;
   name: string;
+  slug: string;
+  chain: string;
+  area: string;
   location: string;
   city: string;
+  state?: string;
+  pincode?: string | null;
   address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  description?: string | null;
+  imageUrl?: string | null;
   amenities: string[];
+  screenCount?: number;
+  formats?: string[];
+  isActive?: boolean;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Screen {
   id: string;
   theatreId: string;
   name: string;
+  screenNumber?: number;
   screenType: "Standard" | "IMAX" | "4DX" | "Dolby Atmos" | "Insignia Luxe";
+  format?: string;
   totalSeats: number;
+  capacity?: number;
+  isActive?: boolean;
   theatre?: Theatre;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Seat {
@@ -73,6 +93,8 @@ export interface Seat {
   seatCode: string; // e.g. "A1", "C4"
   tier: SeatTier;
   priceMultiplier: number;
+  position?: number;
+  isActive?: boolean;
 }
 
 export interface Show {
@@ -84,10 +106,14 @@ export interface Show {
   endTime: string;
   date: string; // YYYY-MM-DD
   basePrice: number;
+  format: string; // e.g. "2D", "IMAX 2D", "4DX"
+  language: string; // e.g. "English", "Hindi", "Gujarati"
+  status: ShowStatus;
   movie?: Movie;
   screen?: Screen;
   theatre?: Theatre;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ShowSeat {

@@ -15,8 +15,9 @@ import {
   Clapperboard,
 } from "lucide-react";
 import { getMovieDetails } from "@/lib/tmdb/movies";
-import { CINEMAS, MOCK_DATES, MOCK_SHOWTIMES_SAMPLE } from "@/lib/mock-data";
+import { getShowsForMovie, getTodayDateIST } from "@/lib/supabase/shows";
 import { ShowtimeButton } from "@/components/movies/ShowtimeButton";
+import { DateSelector } from "@/components/discovery/DateSelector";
 import { TrailerModal } from "@/components/movies/TrailerModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,9 @@ import { Card } from "@/components/ui/card";
 interface MovieDetailsPageProps {
   params: Promise<{
     movieId: string;
+  }>;
+  searchParams: Promise<{
+    date?: string;
   }>;
 }
 
@@ -52,19 +56,24 @@ export async function generateMetadata({
   };
 }
 
-export default async function MovieDetailsPage({ params }: MovieDetailsPageProps) {
+export default async function MovieDetailsPage({
+  params,
+  searchParams,
+}: MovieDetailsPageProps) {
   const { movieId } = await params;
+  const { date } = await searchParams;
+
+  const targetDate = date || getTodayDateIST();
   const movie = await getMovieDetails(movieId);
 
   if (!movie) {
     notFound();
   }
 
-  // Filter cinemas that have this movie playing in Ahmedabad
-  const ahmedabadCinemas = CINEMAS.filter((c) => c.cityId === "ahmedabad");
+  // Fetch real CineBook showtimes for this movie and selected date
+  const movieShowGroups = await getShowsForMovie(movie.id || movie.tmdbId, targetDate);
 
-  // Determine if this movie has active CineBook theatrical showtimes
-  const hasShowtimes = movie.isNowShowing;
+  const hasShowtimes = movieShowGroups.length > 0;
 
   return (
     <div className="pb-20">
@@ -232,77 +241,67 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
             Available Cinemas & Showtimes in Ahmedabad
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-            CineBook operational show schedule & auditorium reservations
+            Real CineBook multiplex screenings & auditorium schedules
           </p>
         </div>
 
+        {/* Date Selector */}
+        <DateSelector selectedDate={targetDate} />
+
         {hasShowtimes ? (
-          <>
-            {/* Date Selector Bar */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-cinebook-border scrollbar-none">
-              {MOCK_DATES.map((dateObj, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className={`flex flex-col items-center justify-center rounded-xl border px-4 py-2.5 min-w-[85px] transition-all ${
-                    i === 0
-                      ? "bg-cinebook-accent text-white border-cinebook-accent shadow-md"
-                      : "bg-cinebook-surface text-zinc-300 border-cinebook-border hover:border-zinc-600 hover:text-white"
-                  }`}
-                >
-                  <span className="text-xs font-medium">{dateObj.day}</span>
-                  <span className="text-sm font-bold">{dateObj.date}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Cinema Showtimes Listing */}
-            <div className="space-y-6">
-              {ahmedabadCinemas.map((cinema) => (
-                <Card
-                  key={cinema.id}
-                  className="p-5 sm:p-6 border border-cinebook-border bg-cinebook-surface"
-                >
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-cinebook-border/80">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Link
-                          href={`/cinemas/${cinema.id}`}
-                          className="text-base sm:text-lg font-bold text-white hover:text-cinebook-accent transition-colors"
-                        >
-                          {cinema.name}
-                        </Link>
-                        <Badge variant="outline" className="text-[10px]">
-                          {cinema.chain}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-zinc-400">
-                        <MapPin className="h-3.5 w-3.5 text-cinebook-accent" />
-                        <span>{cinema.locationArea}</span>
-                      </div>
+          /* Cinema Showtimes Listing */
+          <div className="space-y-6">
+            {movieShowGroups.map((group) => (
+              <Card
+                key={group.theatre.id}
+                className="p-5 sm:p-6 border border-cinebook-border bg-cinebook-surface"
+              >
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-cinebook-border/80">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Link
+                        href={`/cinemas/${group.theatre.slug || group.theatre.id}?date=${targetDate}`}
+                        className="text-base sm:text-lg font-bold text-white hover:text-cinebook-accent transition-colors"
+                      >
+                        {group.theatre.name}
+                      </Link>
+                      <Badge variant="outline" className="text-[10px]">
+                        {group.theatre.chain}
+                      </Badge>
                     </div>
-
-                    <div className="flex items-center gap-2 text-xs text-zinc-400">
-                      <Info className="h-3.5 w-3.5" />
-                      <span>Cancellation Available</span>
+                    <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                      <MapPin className="h-3.5 w-3.5 text-cinebook-accent" />
+                      <span>{group.theatre.area || group.theatre.location}</span>
                     </div>
                   </div>
 
-                  {/* Showtimes Grid for this cinema */}
-                  <div className="pt-4">
-                    <div className="text-xs font-semibold text-zinc-400 mb-3 uppercase tracking-wider">
-                      Available Screenings
-                    </div>
-                    <div className="flex flex-wrap gap-3">
-                      {MOCK_SHOWTIMES_SAMPLE.map((slot) => (
-                        <ShowtimeButton key={slot.id} slot={slot} />
-                      ))}
-                    </div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-400">
+                    <Info className="h-3.5 w-3.5" />
+                    <span>Cancellation Available</span>
                   </div>
-                </Card>
-              ))}
-            </div>
-          </>
+                </div>
+
+                {/* Formats & Showtimes Grid for this cinema */}
+                <div className="pt-4 space-y-3">
+                  {group.formats.map((fmtGroup, idx) => (
+                    <div key={idx} className="space-y-1.5">
+                      <div className="text-[11px] font-semibold text-zinc-400 flex items-center gap-2">
+                        <span className="rounded bg-cinebook-dark px-1.5 py-0.5 text-[10px] text-cinebook-accent border border-cinebook-border">
+                          {fmtGroup.format}
+                        </span>
+                        <span>{fmtGroup.screenName}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2.5">
+                        {fmtGroup.slots.map((show) => (
+                          <ShowtimeButton key={show.id} show={show} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            ))}
+          </div>
         ) : (
           /* Empty State for TMDB movies that do not have CineBook showtimes yet */
           <div className="rounded-2xl border border-dashed border-cinebook-border bg-cinebook-surface/40 p-12 text-center">
@@ -311,7 +310,7 @@ export default async function MovieDetailsPage({ params }: MovieDetailsPageProps
               No CineBook Showtimes Currently Scheduled
             </h3>
             <p className="text-xs text-zinc-400 mt-1 max-w-md mx-auto">
-              This title is part of TMDB discovery. Screenings have not been scheduled yet in CineBook multiplexes. Check back closer to release or explore active theatrical screenings.
+              Screenings for {movie.title} are not scheduled in CineBook multiplexes for the selected date. Please check back closer to release or browse active theatrical screenings.
             </p>
             <div className="mt-6 flex justify-center gap-3">
               <Link href="/movies?category=now-showing">

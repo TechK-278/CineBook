@@ -1,44 +1,68 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import {
   Film,
   Clapperboard,
   MapPin,
   Star,
   ChevronLeft,
-  Sparkles,
   Ticket,
   Clock,
   Info,
 } from "lucide-react";
-import { getCinemaById, CINEMAS, MOVIES, MOCK_DATES, MOCK_SHOWTIMES_SAMPLE } from "@/lib/mock-data";
+import { getTheatreById } from "@/lib/supabase/theatres";
+import { getShowsForTheatre, getTodayDateIST } from "@/lib/supabase/shows";
 import { ShowtimeButton } from "@/components/movies/ShowtimeButton";
+import { DateSelector } from "@/components/discovery/DateSelector";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface CinemaDetailsPageProps {
   params: Promise<{
     cinemaId: string;
   }>;
+  searchParams: Promise<{
+    date?: string;
+  }>;
 }
 
-export async function generateStaticParams() {
-  return CINEMAS.map((cinema) => ({
-    cinemaId: cinema.id,
-  }));
-}
-
-export default async function CinemaDetailsPage({ params }: CinemaDetailsPageProps) {
+export async function generateMetadata({
+  params,
+}: CinemaDetailsPageProps): Promise<Metadata> {
   const { cinemaId } = await params;
-  const cinema = getCinemaById(cinemaId);
+  const cinema = await getTheatreById(cinemaId);
+
+  if (!cinema) {
+    return {
+      title: "Cinema Not Found | CineBook",
+      description: "Explore multiplexes and movie tickets on CineBook Ahmedabad.",
+    };
+  }
+
+  return {
+    title: `${cinema.name} — Showtimes & Movie Tickets | CineBook Ahmedabad`,
+    description: `Book movie tickets at ${cinema.name}, ${cinema.area}, Ahmedabad. Check IMAX, 4DX, Insignia, and Dolby Atmos showtimes.`,
+  };
+}
+
+export default async function CinemaDetailsPage({
+  params,
+  searchParams,
+}: CinemaDetailsPageProps) {
+  const { cinemaId } = await params;
+  const { date } = await searchParams;
+
+  const targetDate = date || getTodayDateIST();
+  const cinema = await getTheatreById(cinemaId);
 
   if (!cinema) {
     notFound();
   }
 
-  // Movies playing at this cinema (demo subset)
-  const moviesPlaying = MOVIES.slice(0, 5);
+  const movieShowGroups = await getShowsForTheatre(cinema.id, targetDate);
 
   return (
     <div className="pb-20">
@@ -60,7 +84,7 @@ export default async function CinemaDetailsPage({ params }: CinemaDetailsPagePro
                 </Badge>
                 <div className="flex items-center gap-1 text-xs text-yellow-400 font-semibold">
                   <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                  {cinema.rating} / 5
+                  {(cinema as any).rating || 4.6} / 5
                 </div>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
@@ -68,12 +92,12 @@ export default async function CinemaDetailsPage({ params }: CinemaDetailsPagePro
               </h1>
               <div className="mt-1.5 flex items-center gap-2 text-xs sm:text-sm text-zinc-400">
                 <MapPin className="h-4 w-4 text-cinebook-accent shrink-0" />
-                <span>{cinema.address}</span>
+                <span>{cinema.address || cinema.location}</span>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2 self-start md:self-auto">
-              {cinema.amenities.map((amenity, i) => (
+              {(cinema.amenities || []).map((amenity, i) => (
                 <span
                   key={i}
                   className="rounded-lg bg-cinebook-dark border border-cinebook-border px-2.5 py-1 text-xs text-zinc-300"
@@ -88,89 +112,115 @@ export default async function CinemaDetailsPage({ params }: CinemaDetailsPagePro
 
       {/* 2. Date Selection & Movies Schedule */}
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Date Selector */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 border-b border-cinebook-border">
-          {MOCK_DATES.map((dateObj, i) => (
-            <button
-              key={i}
-              type="button"
-              className={`flex flex-col items-center justify-center rounded-xl border px-4 py-2.5 min-w-[85px] transition-all ${
-                i === 0
-                  ? "bg-cinebook-accent text-white border-cinebook-accent shadow-md"
-                  : "bg-cinebook-surface text-zinc-300 border-cinebook-border hover:border-zinc-600 hover:text-white"
-              }`}
-            >
-              <span className="text-xs font-medium">{dateObj.day}</span>
-              <span className="text-sm font-bold">{dateObj.date}</span>
-            </button>
-          ))}
-        </div>
+        {/* Interactive Date Selector */}
+        <DateSelector selectedDate={targetDate} />
 
         {/* Movies Playing List */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
               <Clapperboard className="h-5 w-5 text-cinebook-accent" />
-              Movies Playing Today
+              Scheduled Movies
             </h2>
-            <span className="text-xs text-zinc-400">{moviesPlaying.length} Movies Available</span>
+            <span className="text-xs text-zinc-400">
+              {movieShowGroups.length} Titles Screening
+            </span>
           </div>
 
-          {moviesPlaying.map((movie) => (
-            <Card key={movie.id} className="p-5 sm:p-6 border border-cinebook-border bg-cinebook-surface">
-              <div className="flex flex-col sm:flex-row gap-5 items-start">
-                {/* Poster Thumbnail */}
-                <Link
-                  href={`/movies/${movie.id}`}
-                  className="w-20 sm:w-24 shrink-0 aspect-[2/3] rounded-lg overflow-hidden border border-cinebook-border bg-cinebook-dark block hover:opacity-90"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={movie.posterPath}
-                    alt={`Poster of ${movie.title}`}
-                    className="h-full w-full object-cover"
-                  />
-                </Link>
+          {movieShowGroups.length > 0 ? (
+            movieShowGroups.map((group) => (
+              <Card
+                key={group.movie.id}
+                className="p-5 sm:p-6 border border-cinebook-border bg-cinebook-surface"
+              >
+                <div className="flex flex-col sm:flex-row gap-5 items-start">
+                  {/* Poster Thumbnail */}
+                  <Link
+                    href={`/movies/${group.movie.id}`}
+                    className="w-20 sm:w-24 shrink-0 aspect-[2/3] rounded-lg overflow-hidden border border-cinebook-border bg-cinebook-dark block hover:opacity-90 transition-opacity"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={group.movie.posterPath}
+                      alt={`Poster of ${group.movie.title}`}
+                      className="h-full w-full object-cover"
+                    />
+                  </Link>
 
-                {/* Movie Details & Showtimes */}
-                <div className="flex-1 w-full space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <Link
-                        href={`/movies/${movie.id}`}
-                        className="text-lg font-bold text-white hover:text-cinebook-accent transition-colors"
-                      >
-                        {movie.title}
-                      </Link>
-                      <div className="flex items-center gap-2 text-xs text-zinc-400 mt-0.5">
-                        <span className="font-semibold text-zinc-300">{movie.certificate}</span>
-                        <span>•</span>
-                        <span>{movie.language}</span>
-                        <span>•</span>
-                        <span>{movie.durationMinutes}m</span>
-                        <span>•</span>
-                        <span>{movie.genres.join(", ")}</span>
+                  {/* Movie Details & Showtimes */}
+                  <div className="flex-1 w-full space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <Link
+                          href={`/movies/${group.movie.id}`}
+                          className="text-lg font-bold text-white hover:text-cinebook-accent transition-colors"
+                        >
+                          {group.movie.title}
+                        </Link>
+                        <div className="flex items-center gap-2 text-xs text-zinc-400 mt-0.5">
+                          <span className="font-semibold text-zinc-300">
+                            {group.movie.certificate}
+                          </span>
+                          <span>•</span>
+                          <span>{group.movie.language}</span>
+                          <span>•</span>
+                          <span>{group.movie.durationMinutes}m</span>
+                          <span>•</span>
+                          <span>{group.movie.genres.join(", ")}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 text-xs text-yellow-400 font-semibold">
+                        <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                        {group.movie.rating} / 10
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1 text-xs text-yellow-400 font-semibold">
-                      <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                      {movie.rating} / 10
-                    </div>
-                  </div>
-
-                  {/* Showtimes slots */}
-                  <div className="pt-2 border-t border-cinebook-border/80">
-                    <div className="flex flex-wrap gap-3">
-                      {MOCK_SHOWTIMES_SAMPLE.map((slot) => (
-                        <ShowtimeButton key={slot.id} slot={slot} />
+                    {/* Formats & Showtime slots */}
+                    <div className="pt-3 border-t border-cinebook-border/80 space-y-3">
+                      {group.formats.map((fmtGroup, idx) => (
+                        <div key={idx} className="space-y-1.5">
+                          <div className="text-[11px] font-semibold text-zinc-400 flex items-center gap-2">
+                            <span className="rounded bg-cinebook-dark px-1.5 py-0.5 text-[10px] text-cinebook-accent border border-cinebook-border">
+                              {fmtGroup.format}
+                            </span>
+                            <span>{fmtGroup.screenName}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2.5">
+                            {fmtGroup.slots.map((show) => (
+                              <ShowtimeButton key={show.id} show={show} />
+                            ))}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>
                 </div>
+              </Card>
+            ))
+          ) : (
+            <div className="rounded-2xl border border-dashed border-cinebook-border bg-cinebook-surface/40 p-16 text-center">
+              <Ticket className="h-10 w-10 text-zinc-500 mx-auto mb-3" />
+              <h3 className="text-base font-semibold text-white">
+                No Showtimes Scheduled For This Date
+              </h3>
+              <p className="text-xs text-zinc-400 mt-1 max-w-md mx-auto">
+                No screenings are currently available at {cinema.name} for the selected date. Please choose another date or explore other multiplexes in Ahmedabad.
+              </p>
+              <div className="mt-6 flex justify-center gap-3">
+                <Link href="/cinemas">
+                  <Button variant="outline" size="sm" className="text-xs">
+                    Browse Other Cinemas
+                  </Button>
+                </Link>
+                <Link href="/movies">
+                  <Button variant="default" size="sm" className="text-xs">
+                    View All Movies
+                  </Button>
+                </Link>
               </div>
-            </Card>
-          ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
