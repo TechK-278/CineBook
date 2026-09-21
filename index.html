@@ -176,8 +176,8 @@
                     </div>
 
                     <!-- Search & Sort Controls -->
-                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
-                        <div class="input-group input-group-sm" style="min-width: 260px;">
+                    <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2 gap-sm-3 w-100 w-md-auto">
+                        <div class="input-group input-group-sm catalog-search-wrap">
                             <span class="input-group-text bg-cinebook-surface border-cinebook text-cinebook-muted" id="catalog-search-addon">
                                 <i class="bi bi-search" aria-hidden="true"></i>
                             </span>
@@ -187,9 +187,9 @@
                             </button>
                         </div>
 
-                        <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2 catalog-sort-wrap">
                             <label for="catalog-sort-select" class="form-label text-cinebook-muted fs-7 mb-0 text-nowrap">Sort by:</label>
-                            <select id="catalog-sort-select" class="form-select form-select-sm border-cinebook" style="width: 180px;" aria-label="Sort movies by">
+                            <select id="catalog-sort-select" class="form-select form-select-sm border-cinebook" aria-label="Sort movies by">
                                 <option value="popularity">Popularity</option>
                                 <option value="rating">Rating: High to Low</option>
                                 <option value="title">Title: A to Z</option>
@@ -512,19 +512,19 @@
                     <!-- Profile Statistics Summary -->
                     <div class="row g-2 mb-4 text-center">
                         <div class="col-4">
-                            <div class="p-3 rounded bg-cinebook-tertiary border border-cinebook h-100">
+                            <div class="p-2 p-sm-3 rounded bg-cinebook-tertiary border border-cinebook h-100">
                                 <span class="fs-4 fw-bold text-white d-block" id="profile-total-bookings">0</span>
                                 <span class="fs-8 text-cinebook-muted text-uppercase fw-semibold">Total</span>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="p-3 rounded bg-cinebook-tertiary border border-cinebook h-100">
+                            <div class="p-2 p-sm-3 rounded bg-cinebook-tertiary border border-cinebook h-100">
                                 <span class="fs-4 fw-bold text-success d-block" id="profile-confirmed-bookings">0</span>
                                 <span class="fs-8 text-cinebook-muted text-uppercase fw-semibold">Confirmed</span>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="p-3 rounded bg-cinebook-tertiary border border-cinebook h-100">
+                            <div class="p-2 p-sm-3 rounded bg-cinebook-tertiary border border-cinebook h-100">
                                 <span class="fs-4 fw-bold text-cinebook-secondary d-block" id="profile-cancelled-bookings">0</span>
                                 <span class="fs-8 text-cinebook-muted text-uppercase fw-semibold">Cancelled</span>
                             </div>
