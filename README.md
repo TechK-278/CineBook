@@ -1,59 +1,22 @@
-# CineBook — Cinematic Movie Discovery & Ticket Booking SPA
+# CineBook v2 — Full-Stack Cinema Discovery & Ticket Booking Platform
 
-CineBook is a responsive, accessible, and performant client-side Single Page Application (SPA) for discovering movies, exploring showtimes, reserving cinema seats, and managing movie bookings. Designed with a dark aesthetic, CineBook provides an end-to-end cinema reservation workflow running entirely in the browser.
-
----
-
-## 🚀 Technology Stack
-
-- **HTML5**: Semantic markup, accessible landmarks (`<header>`, `<nav>`, `<main>`, `<section>`, `<footer>`), and accessible form controls.
-- **CSS3**: Custom design system built with CSS custom properties, responsive clamp typography, and micro-interactions.
-- **Bootstrap 5 (v5.3.3)**: Responsive grid, containers, buttons, cards, collapsible navbar, forms, modals, utilities, and toast notifications.
-- **Bootstrap Icons (v1.11.3)**: High-clarity vector iconography.
-- **jQuery (v3.7.1)**: Event delegation, DOM manipulation, and dynamic template rendering.
-- **Vanilla JavaScript (ES6+)**: Modular client-side architecture (`CineData`, `Storage`, `UI`, `CineBook`) with robust state management.
+CineBook v2 is a modern, production-grade movie discovery and ticket booking platform built with **Next.js (App Router)**, **React 19**, **TypeScript**, **Tailwind CSS**, **shadcn/ui**, **Supabase**, **PostgreSQL**, **Zod**, and **Vitest**.
 
 ---
 
-## 🎯 Key Features
+## 🏗️ Architecture & Technology Stack
 
-1. **Movie Catalogue & Discovery**:
-   - Browse 12 curated movies across multiple genres (Action, Sci-Fi, Drama, Thriller, Animation, Comedy).
-   - Real-time case-insensitive search across movie titles, genres, and languages.
-   - Dynamic genre filter pills with active toggle states and keyboard activation.
-   - Multi-mode sorting (Popularity, Rating, Title A–Z, Release Date).
-   - Live result counts with screen-reader status announcements (`aria-live="polite"`).
-
-2. **Movie Details Modal**:
-   - Rich movie overview including poster, backdrop, synopsis, certificate, runtime, rating, and language.
-   - Direct seamless transition from details modal to booking flow.
-
-3. **Interactive 4-Step Booking Workflow**:
-   - **Step 1: Date Selection**: 4 upcoming dates generated dynamically with formatted day and date indicators.
-   - **Step 2: Theatre & Showtime Selection**: 4 distinct theatres with multiple showtimes and audio/screen specifications.
-   - **Step 3: Interactive Seat Selection**: 36-seat cinema layout (Rows A–F, 6 seats each) across Recliner, Premium, and Standard tiers, with live occupancy protection and an 8-ticket maximum per transaction.
-   - **Step 4: Customer Details & Checkout**: Validated customer form pre-filled from user profile with instant summary calculation.
-
-4. **Transparent Pricing Calculation**:
-   - Centralized pricing engine: `Subtotal = Ticket Price × Seats`, `Convenience Fee = Math.round(Subtotal × 0.12)`, `Grand Total = Subtotal + Convenience Fee`.
-
-5. **Booking Confirmation & Digital Pass**:
-   - Instant booking confirmation with unique reference code (`CB-XXXXXX`).
-   - Printable-style digital movie pass showcasing cinema details, showtime, and assigned seats.
-
-6. **My Bookings & Cancellation**:
-   - Complete booking history sorted chronologically with confirmed and cancelled visual states.
-   - Safe cancellation workflow with confirmation modal and cancellation timestamp tracking.
-
-7. **User Profile & Statistics**:
-   - Profile management with edit modal and validation.
-   - Real-time synchronized booking metrics (Total Bookings, Active Tickets, Cancelled Bookings).
-   - Profile values prefill future booking workflows automatically.
-
-8. **Accessibility & Responsive Experience**:
-   - Fully keyboard navigable (`Tab`, `Shift+Tab`, `Enter`, `Space`, `Escape`).
-   - ARIA-compliant attributes, explicit label associations, and live announcements.
-   - Tailored responsive layouts tested from 320px mobile screens to wide 1440px+ desktop displays.
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Framework** | Next.js 15 (App Router) | Server-side rendering, Server Components, Route Handlers |
+| **Language** | TypeScript (Strict mode) | Type-safe domain models, API contracts, and component props |
+| **Styling & UI** | Tailwind CSS + shadcn/ui | Dark cinematic design system, accessible UI primitives |
+| **Database & Auth** | Supabase & PostgreSQL | Relational schema, Row-Level Security (RLS), Auth & Realtime |
+| **External APIs** | TMDB API | Live movie metadata, trailers, ratings, genres (server-side only) |
+| **Payments** | Razorpay Gateway | Order generation, checkout, and webhook signature verification |
+| **Validation** | Zod | Server and client schema validation for forms & API payloads |
+| **State Management** | React / Zustand | Ephemeral client UI state (seat selection, stepper progress) |
+| **Testing** | Vitest & Playwright | Fast unit tests (pricing, domain logic) and E2E automation |
 
 ---
 
@@ -61,55 +24,131 @@ CineBook is a responsive, accessible, and performant client-side Single Page App
 
 ```text
 CineBook/
-├── index.html          # Main SPA entry point and layout shell
-├── css/
-│   └── style.css       # CineBook design tokens, typography, and custom styles
-├── js/
-│   ├── app.js          # Application bootstrapper and event wireup
-│   ├── data.js         # Data models, mock dataset, and pricing calculations
-│   ├── ui.js           # UI rendering helpers, modals, and notifications
-│   └── storage.js      # LocalStorage abstraction layer with fallback protection
-├── assets/
-│   ├── images/         # Image assets and banners
-│   └── icons/          # Custom iconography
-├── .gitignore          # Git ignore configuration
-└── README.md           # Project documentation
+├── app/                        # Next.js App Router
+│   ├── layout.tsx              # Root HTML shell & metadata
+│   ├── page.tsx                # Platform overview & architecture landing
+│   ├── globals.css             # Tailwind & CSS custom properties
+│   ├── movies/                 # Movie discovery & catalogue
+│   ├── theatres/               # Theatre & screen showcase
+│   ├── bookings/               # User reservations & passes
+│   └── profile/                # User profile & account preferences
+│
+├── components/
+│   ├── layout/                 # Navbar, Footer, Navigation landmarks
+│   └── ui/                     # Button, Badge, Card, primitives
+│
+├── lib/
+│   ├── pricing/                # Centralized pricing engine & Vitest suite
+│   ├── supabase/               # Browser & server Supabase client factories
+│   ├── tmdb/                   # Server-side TMDB API service abstraction
+│   ├── razorpay/               # Razorpay payment gateway integration stubs
+│   ├── validations/            # Zod validation schemas
+│   └── utils.ts                # Class merging utility (`cn`)
+│
+├── types/                      # Centralized strict TypeScript domain models
+├── supabase/
+│   ├── migrations/             # Relational SQL schema with RLS policies
+│   └── seed.sql                # Initial development seed data
+│
+├── legacy/                     # Preserved v1 Bootstrap reference implementation
+├── .env.example                # Documented environment variable template
+├── package.json
+├── tsconfig.json
+├── tailwind.config.ts
+├── vitest.config.ts
+└── README.md
 ```
 
 ---
 
-## 💾 LocalStorage Data Persistence
+## 💾 Database Schema (PostgreSQL / Supabase)
 
-CineBook persists all state client-side using `localStorage` through a defensive abstraction layer (`Storage`) that safely recovers from missing or malformed data:
+The database schema is organized into relational tables with strict foreign keys and Row Level Security:
 
-- **`cinebook_profile`**: Stores the user's name, email, phone number, city, and avatar initials.
-- **`cinebook_bookings`**: Stores the array of reservation records including movie details, seat numbers, theatre, showtime, pricing breakdown, status (`Confirmed` / `Cancelled`), and timestamps.
-
----
-
-## 💻 How to Run the Application
-
-Because CineBook is built as a zero-dependency client-side SPA:
-
-1. Clone or download the repository:
-   ```bash
-   git clone https://github.com/TechK-278/CineBook.git
-   ```
-2. Open `index.html` directly in any modern browser, or launch a lightweight local HTTP server:
-   ```bash
-   # Using Python 3
-   python -m http.server 8000
-
-   # Or using Node http-server
-   npx http-server . -p 8000
-   ```
-3. Open `http://localhost:8000` in your web browser.
+1. **`profiles`**: User details (full name, phone, city, avatar, role `customer`/`admin`).
+2. **`movies`**: Titles, overviews, ratings, certificates, runtimes, base pricing, TMDB IDs.
+3. **`theatres`**: Multiplex locations, cities, addresses, amenities.
+4. **`screens`**: Auditoriums per theatre (Standard, IMAX, 4DX, Dolby Atmos, Insignia Luxe).
+5. **`seats`**: Standardized seating map (Rows A–F, 6 cols) categorized into Standard, Premium, Recliner.
+6. **`shows`**: Scheduled movie screenings at specific dates, screens, and base prices.
+7. **`show_seats`**: Real-time seat status per show (`available`, `held`, `booked`).
+8. **`bookings`**: Customer ticket reservations, reference codes (`CB-XXXXXX`), financial totals, statuses (`pending`, `confirmed`, `cancelled`).
+9. **`booking_items`**: Individual seats reserved per booking with historical price snapshot.
+10. **`payments`**: Payment transaction logs, Razorpay order IDs, payment signatures.
 
 ---
 
-## 📋 Scope & Limitations
+## 💰 Centralized Pricing Engine
 
-- **Simulation Demo**: CineBook is a frontend demonstration Single Page Application.
-- **Client-Side Only**: Does not integrate real payment gateways (e.g., Stripe/Razorpay) or live backend database servers.
-- **Single-User Scope**: Seat occupancy states are simulated client-side and do not support multi-user real-time locking across different physical devices.
-- **Authentication**: User identity is represented as an editable client-side profile without a remote authentication server.
+All ticket pricing logic is encapsulated in `lib/pricing/index.ts`:
+
+- **Subtotal**: `unitPrice × seatCount`
+- **Convenience Fee**: `Math.round(subtotal × 0.12)` (12% standard rate)
+- **Grand Total**: `Subtotal + ConvenienceFee`
+
+Example calculations:
+- `1 ticket @ ₹320`: Subtotal = ₹320, Fee = ₹38, Grand Total = **₹358**
+- `3 tickets @ ₹320`: Subtotal = ₹960, Fee = ₹115, Grand Total = **₹1075**
+- `8 tickets @ ₹320`: Subtotal = ₹2560, Fee = ₹307, Grand Total = **₹2867**
+
+---
+
+## ⚙️ Environment Variables
+
+Copy `.env.example` to `.env.local` to configure environment variables:
+
+```bash
+cp .env.example .env.local
+```
+
+Required variables:
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anon/public key
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key (server only)
+- `TMDB_API_KEY`: TMDB v3 API Key
+- `NEXT_PUBLIC_RAZORPAY_KEY_ID`: Razorpay key identifier
+- `RAZORPAY_KEY_SECRET`: Razorpay secret key (server only)
+
+> **Security Note**: Never commit `.env` or `.env.local` files containing real API credentials into source control.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Run Local Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### 3. Run Automated Tests & Typecheck
+```bash
+# Run Vitest unit tests
+npm test
+
+# Run TypeScript typecheck
+npm run typecheck
+
+# Build production bundle
+npm run build
+```
+
+---
+
+## 📌 Implementation Status (Phase 0 Complete)
+
+- [x] **Phase 0: Architecture & Foundation**: Next.js App Router, TypeScript strict mode, Tailwind CSS design system, domain types, pricing engine, Zod validation, Supabase & PostgreSQL migration structure, TMDB & Razorpay client abstractions, Vitest suite, and production build verification.
+- [ ] **Phase 1**: Authentication & User Profiles (Supabase Auth, SSR session middleware).
+- [ ] **Phase 2**: Database Seed & Remote Synchronization.
+- [ ] **Phase 3**: TMDB Live Integration & Movie Catalogue Discovery.
+- [ ] **Phase 4**: Theatres, Screens & Showtime Scheduling.
+- [ ] **Phase 5**: Real-Time Seat Selection & Lock Engine.
+- [ ] **Phase 6**: Razorpay Checkout & Webhook Processing.
+- [ ] **Phase 7**: Digital Pass, My Bookings & Cancellation Engine.
+- [ ] **Phase 8**: Admin Management Portal.
+- [ ] **Phase 9**: Production E2E Testing & Vercel Deployment.
