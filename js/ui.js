@@ -168,51 +168,59 @@ const UI = (function ($) {
             const safeDesc = escapeHtml(movie.description);
             const genresHtml = movie.genre.map(g => `<span class="badge bg-cinebook-tertiary border border-cinebook text-cinebook-secondary">${escapeHtml(g)}</span>`).join(' ');
 
+            $('#movieDetailsModalLabel').text(safeTitle);
+
             const modalHtml = `
                 <div class="row g-0">
                     <div class="col-12 col-md-5">
-                        <img src="${movie.poster}" alt="${safeTitle}" class="img-fluid w-100 h-100 object-fit-cover rounded-start-lg" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
+                        <div class="modal-poster-wrap h-100">
+                            <img src="${movie.poster}" alt="Poster of ${safeTitle}" class="img-fluid w-100 h-100 object-fit-cover" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
+                        </div>
                     </div>
-                    <div class="col-12 col-md-7 p-4 d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h3 class="h4 fw-bold text-white mb-1">${safeTitle}</h3>
-                                <div class="d-flex align-items-center gap-2 mb-2">
-                                    <span class="badge bg-cinebook-accent text-white">${escapeHtml(movie.certificate)}</span>
-                                    <span class="text-cinebook-secondary fs-7"><i class="bi bi-clock me-1" aria-hidden="true"></i>${escapeHtml(movie.duration)}</span>
-                                    <span class="text-cinebook-secondary fs-7">• ${escapeHtml(movie.language)}</span>
+                    <div class="col-12 col-md-7 p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                <div>
+                                    <h3 class="h4 fw-bold text-white mb-1" id="movie-detail-title">${safeTitle}</h3>
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                        <span class="badge bg-cinebook-accent text-white">${escapeHtml(movie.certificate)}</span>
+                                        <span class="text-cinebook-secondary fs-7"><i class="bi bi-clock me-1" aria-hidden="true"></i>${escapeHtml(movie.duration)}</span>
+                                        <span class="text-cinebook-secondary fs-7">• ${escapeHtml(movie.language)}</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-1 bg-cinebook-tertiary border border-cinebook px-2 py-1 rounded" aria-label="Rating ${movie.rating} out of 10">
+                                    <i class="bi bi-star-fill text-warning" aria-hidden="true"></i>
+                                    <span class="fw-bold text-white fs-7">${movie.rating}</span>
                                 </div>
                             </div>
-                            <div class="d-flex align-items-center gap-1 bg-cinebook-tertiary border border-cinebook px-2 py-1 rounded">
-                                <i class="bi bi-star-fill text-warning" aria-hidden="true"></i>
-                                <span class="fw-bold text-white fs-7">${movie.rating}</span>
+
+                            <div class="mb-3 d-flex flex-wrap gap-1" aria-label="Genres">
+                                ${genresHtml}
                             </div>
+
+                            <h4 class="text-white fs-8 text-uppercase tracking-tight text-cinebook-muted mb-1">Synopsis</h4>
+                            <p class="text-cinebook-secondary fs-7 mb-3">
+                                ${safeDesc}
+                            </p>
                         </div>
 
-                        <div class="mb-3 d-flex flex-wrap gap-1">
-                            ${genresHtml}
-                        </div>
-
-                        <h6 class="text-white fs-7 text-uppercase tracking-tight text-cinebook-muted mb-1">Synopsis</h6>
-                        <p class="text-cinebook-secondary fs-7 mb-4 flex-grow-1">
-                            ${safeDesc}
-                        </p>
-
-                        <div class="p-3 rounded bg-cinebook-tertiary border border-cinebook mb-4 d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="text-cinebook-muted fs-8">Ticket Starting From</div>
-                                <div class="fw-bold text-cinebook-accent fs-5">₹${movie.price}</div>
+                        <div>
+                            <div class="p-3 rounded bg-cinebook-tertiary border border-cinebook mb-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-cinebook-muted fs-8">Ticket Starting From</div>
+                                    <div class="fw-bold text-cinebook-accent fs-5">₹${movie.price}</div>
+                                </div>
+                                <div class="text-cinebook-muted fs-8 text-end">
+                                    Release: ${movie.releaseDate}
+                                </div>
                             </div>
-                            <div class="text-cinebook-muted fs-8 text-end">
-                                Release: ${movie.releaseDate}
-                            </div>
-                        </div>
 
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-cinebook-surface flex-fill" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-cinebook-accent flex-fill btn-modal-book-now" data-movie-id="${movie.id}">
-                                Book Tickets
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-cinebook-surface flex-fill" data-bs-dismiss="modal" aria-label="Close movie details modal">Close</button>
+                                <button type="button" class="btn btn-cinebook-accent flex-fill btn-modal-book-now d-inline-flex align-items-center justify-content-center gap-2" data-movie-id="${movie.id}" aria-label="Book tickets for ${safeTitle}">
+                                    <i class="bi bi-ticket-perforated" aria-hidden="true"></i> Book Tickets
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -248,7 +256,7 @@ const UI = (function ($) {
                             <p class="text-cinebook-secondary fs-8 mb-0">${genresHtml} • <i class="bi bi-star-fill text-warning me-1" aria-hidden="true"></i>${movie.rating}/10</p>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-cinebook-outline btn-sm px-3 align-self-start align-self-md-center" data-view="movies">
+                    <button type="button" class="btn btn-cinebook-outline btn-sm px-3 align-self-start align-self-md-center" data-view="movies" aria-label="Choose a different movie">
                         <i class="bi bi-arrow-left me-1" aria-hidden="true"></i> Change Movie
                     </button>
                 </div>
@@ -262,13 +270,16 @@ const UI = (function ($) {
          * @param {number} selectedIndex 
          */
         renderBookingDates: function (dates, selectedIndex = 0) {
-            const html = dates.map((d, idx) => `
-                <button type="button" class="booking-date-card ${idx === selectedIndex ? 'active' : ''}" data-date-index="${idx}" aria-label="Select date ${d.fullDate}">
-                    <span class="fs-8 ${idx === selectedIndex ? 'text-white' : 'text-cinebook-muted'} fw-semibold d-block">${d.label}</span>
-                    <span class="fs-5 fw-bold ${idx === selectedIndex ? 'text-cinebook-accent' : 'text-white'} d-block">${d.dayNumber}</span>
-                    <span class="fs-8 text-cinebook-secondary d-block">${d.month}</span>
-                </button>
-            `).join('');
+            const html = dates.map((d, idx) => {
+                const isSelected = idx === selectedIndex;
+                return `
+                    <button type="button" class="booking-date-card ${isSelected ? 'active' : ''}" data-date-index="${idx}" aria-label="Select date ${d.fullDate}" aria-pressed="${isSelected}">
+                        <span class="fs-8 ${isSelected ? 'text-white' : 'text-cinebook-muted'} fw-semibold d-block">${d.label}</span>
+                        <span class="fs-5 fw-bold ${isSelected ? 'text-cinebook-accent' : 'text-white'} d-block">${d.dayNumber}</span>
+                        <span class="fs-8 text-cinebook-secondary d-block">${d.month}</span>
+                    </button>
+                `;
+            }).join('');
             $('#booking-dates-container').html(html);
         },
 
@@ -283,18 +294,19 @@ const UI = (function ($) {
                 const isTheatreSelected = th.id === selectedTheatreId;
                 const showtimesHtml = th.showtimes.map(st => {
                     const isActive = isTheatreSelected && st === selectedShowtime;
-                    return `<button type="button" class="showtime-pill ${isActive ? 'active' : ''}" data-theatre-id="${th.id}" data-showtime="${st}" aria-label="${th.name} at ${st}">${st}</button>`;
+                    return `<button type="button" class="showtime-pill ${isActive ? 'active' : ''}" data-theatre-id="${th.id}" data-showtime="${st}" aria-label="${th.name} at ${st}" aria-pressed="${isActive}">${st}</button>`;
                 }).join(' ');
 
                 return `
                     <div class="p-3 rounded bg-cinebook-tertiary border ${isTheatreSelected ? 'border-cinebook-accent' : 'border-cinebook'}">
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
                             <div>
-                                <h6 class="text-white mb-0 fw-semibold">${escapeHtml(th.name)}</h6>
+                                <h3 class="text-white mb-0 h6 fw-semibold">${escapeHtml(th.name)}</h3>
                                 <span class="fs-8 text-cinebook-muted"><i class="bi bi-geo-alt me-1" aria-hidden="true"></i>${escapeHtml(th.location)} • <span class="text-cinebook-secondary">${escapeHtml(th.screen)}</span></span>
                             </div>
+                            ${isTheatreSelected ? '<span class="badge bg-cinebook-surface text-cinebook-accent border border-cinebook fs-8"><i class="bi bi-check2 me-1" aria-hidden="true"></i>Selected Theatre</span>' : ''}
                         </div>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-2" role="group" aria-label="Available Showtimes at ${escapeHtml(th.name)}">
                             ${showtimesHtml}
                         </div>
                     </div>
@@ -318,8 +330,9 @@ const UI = (function ($) {
                     const isSelected = selectedSeats.includes(s.id);
                     const isOccupied = s.isOccupied;
                     const seatClass = isOccupied ? 'occupied' : isSelected ? 'selected' : '';
-                    const ariaLabel = isOccupied ? `Seat ${s.id} occupied` : isSelected ? `Seat ${s.id} selected` : `Seat ${s.id} available`;
-                    return `<button type="button" class="seat-btn ${seatClass}" data-seat-id="${s.id}" ${isOccupied ? 'disabled' : ''} aria-label="${ariaLabel}">${s.col}</button>`;
+                    const statusText = isOccupied ? 'Occupied' : isSelected ? 'Selected' : 'Available';
+                    const ariaLabel = `Seat ${s.id} (${statusText})`;
+                    return `<button type="button" class="seat-btn ${seatClass}" data-seat-id="${s.id}" ${isOccupied ? 'disabled' : ''} aria-label="${ariaLabel}" aria-pressed="${isSelected}">${s.col}</button>`;
                 }).join('');
 
                 html += `
@@ -339,10 +352,10 @@ const UI = (function ($) {
          */
         updateBookingSummary: function (movie, theatre, date, showtime, selectedSeats = [], pricePerTicket = 250) {
             $('#summary-movie-title').text(movie ? movie.title : '—');
-            $('#summary-theatre').text(theatre ? theatre.name : '—');
+            $('#summary-theatre').text(theatre ? `${theatre.name} (${theatre.screen})` : '—');
             $('#summary-date').text(date ? date.fullDate : '—');
             $('#summary-showtime').text(showtime || '—');
-            $('#summary-seats').text(selectedSeats.length > 0 ? selectedSeats.join(', ') : '—');
+            $('#summary-seats').text(selectedSeats.length > 0 ? selectedSeats.join(', ') : 'None selected');
             $('#summary-seat-count').text(selectedSeats.length);
 
             const pricing = CineData.calculatePricing(pricePerTicket, selectedSeats.length);
@@ -350,6 +363,16 @@ const UI = (function ($) {
             $('#summary-subtotal').text(`₹${pricing.subtotal}`);
             $('#summary-fee').text(`₹${pricing.fee}`);
             $('#summary-grand-total').text(`₹${pricing.grandTotal}`);
+
+            // Update Progress Indicator
+            const hasDate = Boolean(date);
+            const hasShowtime = Boolean(theatre && showtime);
+            const hasSeats = Boolean(selectedSeats.length > 0);
+
+            $('#step-pill-1').toggleClass('completed', hasDate).toggleClass('active', !hasShowtime);
+            $('#step-pill-2').toggleClass('completed', hasShowtime).toggleClass('active', hasDate && !hasSeats);
+            $('#step-pill-3').toggleClass('completed', hasSeats).toggleClass('active', hasShowtime && !hasSeats);
+            $('#step-pill-4').toggleClass('active', hasSeats);
 
             // Enable confirmation if movie, theatre, showtime, date, and seats are selected
             const isValid = Boolean(movie && theatre && date && showtime && selectedSeats.length > 0);

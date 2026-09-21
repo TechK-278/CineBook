@@ -475,6 +475,60 @@ select:focus-visible {
     overflow: hidden;
 }
 
+/* Booking Progress Indicator */
+.booking-progress-bar {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+}
+
+.booking-step-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: all var(--transition-fast);
+}
+
+.booking-step-pill .step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.booking-step-pill.active {
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.booking-step-pill.active .step-num {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #FFFFFF;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.booking-step-pill.completed {
+    color: var(--success);
+}
+
+.booking-step-pill.completed .step-num {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: #FFFFFF;
+}
+
 .booking-date-card {
     background-color: var(--surface);
     border: 1px solid var(--border);
@@ -492,6 +546,11 @@ select:focus-visible {
     border-color: var(--border-hover);
 }
 
+.booking-date-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 .booking-date-card.active {
     background-color: var(--surface-active);
     border-color: var(--accent);
@@ -504,22 +563,34 @@ select:focus-visible {
     border: 1px solid var(--border);
     color: var(--text-primary);
     border-radius: var(--radius-btn);
-    padding: 0.45rem 0.85rem;
+    padding: 0.5rem 0.9rem;
     font-size: 0.875rem;
     font-weight: 500;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    user-select: none;
     transition: all var(--transition-fast);
 }
 
 .showtime-pill:hover {
     background-color: var(--surface-hover);
     border-color: var(--border-hover);
+    color: #FFFFFF;
+}
+
+.showtime-pill:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
 .showtime-pill.active {
     background-color: var(--accent);
     border-color: var(--accent);
     color: #FFFFFF;
+    box-shadow: 0 0 10px var(--accent-glow);
 }
 
 /* Cinema Screen Graphic */
@@ -690,10 +761,29 @@ input[type="search"]::-webkit-search-results-decoration {
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     color: var(--text-primary);
+    overflow: hidden;
 }
 
 .modal-header, .modal-footer {
     border-color: var(--border);
+}
+
+.modal-poster-wrap {
+    background-color: var(--bg-tertiary);
+    min-height: 280px;
+}
+
+@media (max-width: 767.98px) {
+    .modal-poster-wrap {
+        max-height: 240px;
+        min-height: unset;
+        overflow: hidden;
+    }
+    
+    .modal-poster-wrap img {
+        height: 240px !important;
+        object-position: center 20%;
+    }
 }
 
 /* Digital Pass / Confirmation Ticket */

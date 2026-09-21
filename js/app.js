@@ -158,7 +158,11 @@ const CineBook = (function ($) {
 
         // Pre-fill profile contact info
         const profile = Storage.getProfile();
-        UI.renderProfile(profile, Storage.getBookings().length);
+        if (profile) {
+            $('#cust-name').val(profile.name || '');
+            $('#cust-email').val(profile.email || '');
+            $('#cust-phone').val(profile.phone || '');
+        }
 
         // Render booking step components
         UI.renderBookingMovieBanner(movie);
@@ -185,6 +189,9 @@ const CineBook = (function ($) {
      * Finalize and confirm the current booking
      */
     function finalizeBooking() {
+        const $btn = $('#btn-confirm-booking');
+        if ($btn.prop('disabled')) return;
+
         const form = document.getElementById('booking-customer-form');
         if (!form) return;
 
@@ -198,6 +205,9 @@ const CineBook = (function ($) {
             UI.showToast('Please select at least one seat to proceed.', 'warning');
             return;
         }
+
+        // Prevent duplicate submission
+        $btn.prop('disabled', true);
 
         const customerName = $('#cust-name').val().trim();
         const customerEmail = $('#cust-email').val().trim();
@@ -238,6 +248,9 @@ const CineBook = (function ($) {
         UI.renderProfile(profile, Storage.getBookings().length);
         UI.renderConfirmation(bookingObj);
         UI.showToast(`Booking ${bookingId} confirmed successfully!`, 'success');
+
+        // Reset button state
+        $btn.prop('disabled', false);
 
         // Navigate to confirmation view
         navigateTo('confirmation');
@@ -396,6 +409,16 @@ const CineBook = (function ($) {
                 appState.activeBooking.selectedSeats,
                 appState.activeBooking.movie.price
             );
+        });
+
+        // Customer Form Input live validation update
+        $('#booking-customer-form input').on('input', function () {
+            if ($('#booking-customer-form').hasClass('was-validated')) {
+                const form = document.getElementById('booking-customer-form');
+                if (form && form.checkValidity()) {
+                    $('#booking-customer-form').removeClass('was-validated');
+                }
+            }
         });
 
         // Confirm & Book Tickets Button

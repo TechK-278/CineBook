@@ -242,26 +242,55 @@
                     <!-- Dynamic Movie Header -->
                 </div>
 
+                <!-- Booking Step Progress Indicator -->
+                <div class="booking-progress-bar mb-4 p-3 cb-surface d-flex justify-content-between align-items-center flex-wrap gap-2 shadow-sm" role="navigation" aria-label="Booking Progress">
+                    <div class="booking-step-pill active" id="step-pill-1">
+                        <span class="step-num" aria-hidden="true">1</span>
+                        <span class="step-label">Date</span>
+                    </div>
+                    <div class="step-divider d-none d-sm-block" aria-hidden="true"><i class="bi bi-chevron-right fs-8 text-cinebook-muted"></i></div>
+                    <div class="booking-step-pill" id="step-pill-2">
+                        <span class="step-num" aria-hidden="true">2</span>
+                        <span class="step-label">Showtime</span>
+                    </div>
+                    <div class="step-divider d-none d-sm-block" aria-hidden="true"><i class="bi bi-chevron-right fs-8 text-cinebook-muted"></i></div>
+                    <div class="booking-step-pill" id="step-pill-3">
+                        <span class="step-num" aria-hidden="true">3</span>
+                        <span class="step-label">Seats</span>
+                    </div>
+                    <div class="step-divider d-none d-sm-block" aria-hidden="true"><i class="bi bi-chevron-right fs-8 text-cinebook-muted"></i></div>
+                    <div class="booking-step-pill" id="step-pill-4">
+                        <span class="step-num" aria-hidden="true">4</span>
+                        <span class="step-label">Details</span>
+                    </div>
+                </div>
+
                 <div class="row g-4">
                     <!-- Left: Booking Selections -->
                     <div class="col-12 col-lg-8">
                         
                         <!-- Step 1: Select Date -->
-                        <div class="cb-surface p-4 mb-4">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="badge bg-cinebook-accent text-white" aria-hidden="true">1</span>
-                                <h2 class="h5 text-white mb-0">Select Date</h2>
+                        <div class="cb-surface p-4 mb-4" id="booking-step-date-section">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-cinebook-accent text-white rounded-circle p-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;" aria-hidden="true">1</span>
+                                    <h2 class="h5 text-white mb-0">Select Date</h2>
+                                </div>
+                                <span class="fs-8 text-cinebook-muted">Step 1 of 4</span>
                             </div>
-                            <div class="d-flex flex-wrap gap-2" id="booking-dates-container">
+                            <div class="d-flex flex-wrap gap-2" id="booking-dates-container" role="radiogroup" aria-label="Select Screening Date">
                                 <!-- Dynamic Date Cards -->
                             </div>
                         </div>
 
                         <!-- Step 2: Select Theatre & Showtime -->
-                        <div class="cb-surface p-4 mb-4">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="badge bg-cinebook-accent text-white" aria-hidden="true">2</span>
-                                <h2 class="h5 text-white mb-0">Select Theatre & Showtime</h2>
+                        <div class="cb-surface p-4 mb-4" id="booking-step-theatre-section">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-cinebook-accent text-white rounded-circle p-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;" aria-hidden="true">2</span>
+                                    <h2 class="h5 text-white mb-0">Select Theatre & Showtime</h2>
+                                </div>
+                                <span class="fs-8 text-cinebook-muted">Step 2 of 4</span>
                             </div>
                             <div class="d-flex flex-column gap-3" id="booking-theatres-container">
                                 <!-- Dynamic Theatres and Showtimes -->
@@ -269,13 +298,13 @@
                         </div>
 
                         <!-- Step 3: Select Seats -->
-                        <div class="cb-surface p-4 mb-4">
+                        <div class="cb-surface p-4 mb-4" id="booking-step-seats-section">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-cinebook-accent text-white" aria-hidden="true">3</span>
+                                    <span class="badge bg-cinebook-accent text-white rounded-circle p-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;" aria-hidden="true">3</span>
                                     <h2 class="h5 text-white mb-0">Select Seats</h2>
                                 </div>
-                                <span class="fs-7 text-cinebook-muted">Click on available seats to select</span>
+                                <span class="fs-8 text-cinebook-muted">Max 8 seats per booking</span>
                             </div>
 
                             <!-- Screen Graphic -->
@@ -307,10 +336,13 @@
                         </div>
 
                         <!-- Step 4: Customer Information -->
-                        <div class="cb-surface p-4">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="badge bg-cinebook-accent text-white" aria-hidden="true">4</span>
-                                <h2 class="h5 text-white mb-0">Customer Information</h2>
+                        <div class="cb-surface p-4" id="booking-step-details-section">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-cinebook-accent text-white rounded-circle p-2" style="width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;" aria-hidden="true">4</span>
+                                    <h2 class="h5 text-white mb-0">Customer Information</h2>
+                                </div>
+                                <span class="fs-8 text-cinebook-muted">Step 4 of 4</span>
                             </div>
                             <form id="booking-customer-form" class="needs-validation" novalidate>
                                 <div class="row g-3">
@@ -327,7 +359,7 @@
                                     <div class="col-12 col-md-6">
                                         <label for="cust-phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
                                         <input type="tel" class="form-control" id="cust-phone" placeholder="+91 98765 43210" pattern="^\+?[0-9\s-]{10,15}$" required autocomplete="tel">
-                                        <div class="invalid-feedback">Please enter a valid contact phone number.</div>
+                                        <div class="invalid-feedback">Please enter a valid contact phone number (10-15 digits).</div>
                                     </div>
                                 </div>
                             </form>
@@ -338,7 +370,10 @@
                     <!-- Right: Live Booking Summary -->
                     <div class="col-12 col-lg-4">
                         <div class="booking-summary-panel p-4 shadow">
-                            <h2 class="h5 text-white mb-3 pb-2 border-bottom border-cinebook">Booking Summary</h2>
+                            <h2 class="h5 text-white mb-3 pb-2 border-bottom border-cinebook d-flex justify-content-between align-items-center">
+                                <span>Booking Summary</span>
+                                <i class="bi bi-receipt text-cinebook-accent fs-6" aria-hidden="true"></i>
+                            </h2>
                             
                             <div class="d-flex flex-column gap-2 mb-3 fs-7" id="booking-summary-details">
                                 <div class="d-flex justify-content-between">
@@ -379,11 +414,11 @@
                                 <span class="fw-bold text-cinebook-accent fs-4" id="summary-grand-total">₹0</span>
                             </div>
 
-                            <button type="button" class="btn btn-cinebook-accent w-100 py-3 fw-bold" id="btn-confirm-booking" disabled>
-                                Confirm & Book Tickets
+                            <button type="button" class="btn btn-cinebook-accent w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2" id="btn-confirm-booking" disabled aria-label="Confirm and complete ticket booking">
+                                <i class="bi bi-shield-check" aria-hidden="true"></i> Confirm & Book Tickets
                             </button>
                             <p class="text-center text-cinebook-muted fs-8 mt-2 mb-0">
-                                Instant confirmation • Free cancellation available
+                                Instant digital pass • Free cancellation available
                             </p>
                         </div>
                     </div>
@@ -396,7 +431,7 @@
             <div class="container py-4">
                 <div class="digital-ticket-card p-4 p-md-5 mx-auto max-w-xl shadow">
                     <div class="text-center mb-4 pb-3 border-bottom border-cinebook">
-                        <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-surface mb-3 border border-cinebook">
+                        <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-surface mb-3 border border-cinebook shadow-sm">
                             <i class="bi bi-check2-circle text-success fs-1" aria-hidden="true"></i>
                         </div>
                         <h1 class="h3 fw-bold text-white mb-1">Booking Confirmed 🎟️</h1>
@@ -408,11 +443,11 @@
                     </div>
 
                     <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 pt-3 border-top border-cinebook">
-                        <button type="button" class="btn btn-cinebook-accent px-4 py-2" data-view="bookings">
-                            <i class="bi bi-ticket-perforated me-1" aria-hidden="true"></i> View My Bookings
+                        <button type="button" class="btn btn-cinebook-accent px-4 py-2 d-inline-flex align-items-center justify-content-center gap-2" data-view="bookings" aria-label="View all my bookings">
+                            <i class="bi bi-ticket-perforated" aria-hidden="true"></i> View My Bookings
                         </button>
-                        <button type="button" class="btn btn-cinebook-surface px-4 py-2" data-view="movies">
-                            <i class="bi bi-compass me-1" aria-hidden="true"></i> Back to Movies
+                        <button type="button" class="btn btn-cinebook-surface px-4 py-2 d-inline-flex align-items-center justify-content-center gap-2" data-view="movies" aria-label="Return to movie catalogue">
+                            <i class="bi bi-compass" aria-hidden="true"></i> Back to Movies
                         </button>
                     </div>
                 </div>
