@@ -319,17 +319,21 @@
                             </div>
 
                             <!-- Legend -->
-                            <div class="d-flex justify-content-center gap-4 mt-4 pt-3 border-top border-cinebook flex-wrap">
+                            <div class="d-flex justify-content-center gap-4 mt-4 pt-3 border-top border-cinebook flex-wrap" role="region" aria-label="Seat Map Legend">
                                 <div class="seat-legend-item">
                                     <div class="seat-legend-box bg-cinebook-surface" aria-hidden="true"></div>
                                     <span>Available</span>
                                 </div>
                                 <div class="seat-legend-item">
-                                    <div class="seat-legend-box bg-cinebook-accent border-0" aria-hidden="true"></div>
-                                    <span>Selected</span>
+                                    <div class="seat-legend-box bg-cinebook-accent text-white" aria-hidden="true">
+                                        <i class="bi bi-check" aria-hidden="true"></i>
+                                    </div>
+                                    <span class="text-white">Selected</span>
                                 </div>
                                 <div class="seat-legend-item">
-                                    <div class="seat-legend-box bg-cinebook-tertiary text-muted opacity-50" aria-hidden="true"></div>
+                                    <div class="seat-legend-box bg-cinebook-tertiary text-muted" aria-hidden="true">
+                                        <i class="bi bi-x" aria-hidden="true"></i>
+                                    </div>
                                     <span>Occupied</span>
                                 </div>
                             </div>

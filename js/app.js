@@ -386,19 +386,19 @@ const CineBook = (function ($) {
         // Seat Toggle Selection
         $('#booking-seat-grid').on('click', '.seat-btn', function () {
             const seatId = $(this).data('seat-id');
-            if ($(this).hasClass('occupied') || !seatId) return;
+            if ($(this).hasClass('occupied') || $(this).prop('disabled') || !seatId) return;
 
             const index = appState.activeBooking.selectedSeats.indexOf(seatId);
             if (index > -1) {
                 appState.activeBooking.selectedSeats.splice(index, 1);
-                $(this).removeClass('selected');
+                $(this).removeClass('selected').attr('aria-pressed', 'false').attr('aria-label', `Seat ${seatId}, available`);
             } else {
                 if (appState.activeBooking.selectedSeats.length >= MAX_SEATS_PER_BOOKING) {
                     UI.showToast(`You can select a maximum of ${MAX_SEATS_PER_BOOKING} seats per booking.`, 'warning');
                     return;
                 }
                 appState.activeBooking.selectedSeats.push(seatId);
-                $(this).addClass('selected');
+                $(this).addClass('selected').attr('aria-pressed', 'true').attr('aria-label', `Seat ${seatId}, selected`);
             }
 
             UI.updateBookingSummary(

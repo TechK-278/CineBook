@@ -330,9 +330,9 @@ const UI = (function ($) {
                     const isSelected = selectedSeats.includes(s.id);
                     const isOccupied = s.isOccupied;
                     const seatClass = isOccupied ? 'occupied' : isSelected ? 'selected' : '';
-                    const statusText = isOccupied ? 'Occupied' : isSelected ? 'Selected' : 'Available';
-                    const ariaLabel = `Seat ${s.id} (${statusText})`;
-                    return `<button type="button" class="seat-btn ${seatClass}" data-seat-id="${s.id}" ${isOccupied ? 'disabled' : ''} aria-label="${ariaLabel}" aria-pressed="${isSelected}">${s.col}</button>`;
+                    const statusText = isOccupied ? 'occupied' : isSelected ? 'selected' : 'available';
+                    const ariaLabel = `Seat ${s.id}, ${statusText}`;
+                    return `<button type="button" class="seat-btn ${seatClass}" data-seat-id="${s.id}" ${isOccupied ? 'disabled aria-disabled="true"' : ''} aria-label="${ariaLabel}" aria-pressed="${isSelected}">${s.col}</button>`;
                 }).join('');
 
                 html += `
@@ -356,9 +356,11 @@ const UI = (function ($) {
             $('#summary-date').text(date ? date.fullDate : '—');
             $('#summary-showtime').text(showtime || '—');
             $('#summary-seats').text(selectedSeats.length > 0 ? selectedSeats.join(', ') : 'None selected');
-            $('#summary-seat-count').text(selectedSeats.length);
+            
+            const count = selectedSeats.length;
+            $('#summary-seat-count').text(count);
 
-            const pricing = CineData.calculatePricing(pricePerTicket, selectedSeats.length);
+            const pricing = CineData.calculatePricing(pricePerTicket, count);
 
             $('#summary-subtotal').text(`₹${pricing.subtotal}`);
             $('#summary-fee').text(`₹${pricing.fee}`);
@@ -367,7 +369,7 @@ const UI = (function ($) {
             // Update Progress Indicator
             const hasDate = Boolean(date);
             const hasShowtime = Boolean(theatre && showtime);
-            const hasSeats = Boolean(selectedSeats.length > 0);
+            const hasSeats = Boolean(count > 0);
 
             $('#step-pill-1').toggleClass('completed', hasDate).toggleClass('active', !hasShowtime);
             $('#step-pill-2').toggleClass('completed', hasShowtime).toggleClass('active', hasDate && !hasSeats);
@@ -375,7 +377,7 @@ const UI = (function ($) {
             $('#step-pill-4').toggleClass('active', hasSeats);
 
             // Enable confirmation if movie, theatre, showtime, date, and seats are selected
-            const isValid = Boolean(movie && theatre && date && showtime && selectedSeats.length > 0);
+            const isValid = Boolean(movie && theatre && date && showtime && count > 0);
             $('#btn-confirm-booking').prop('disabled', !isValid);
         },
 
