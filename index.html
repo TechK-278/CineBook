@@ -461,33 +461,33 @@
         <!-- 5. MY BOOKINGS VIEW -->
         <section id="bookingsView" class="spa-view d-none py-5" aria-label="My Bookings">
             <div class="container">
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-cinebook">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 pb-3 border-bottom border-cinebook">
                     <div>
                         <h1 class="h3 fw-bold text-white mb-1">My Bookings</h1>
-                        <p class="text-cinebook-secondary fs-7 mb-0">View, manage, and track your movie reservations.</p>
+                        <p class="text-cinebook-secondary fs-7 mb-0">Your movie reservations</p>
                     </div>
-                    <button type="button" class="btn btn-cinebook-accent btn-sm px-3" data-view="movies">
-                        <i class="bi bi-plus-lg me-1" aria-hidden="true"></i> Book New Ticket
+                    <button type="button" class="btn btn-cinebook-accent btn-sm px-3 d-inline-flex align-items-center gap-2 align-self-start align-self-sm-center" data-view="movies" aria-label="Book new movie tickets">
+                        <i class="bi bi-plus-lg" aria-hidden="true"></i> Book New Ticket
                     </button>
                 </div>
 
                 <!-- Bookings Cards Container -->
-                <div id="my-bookings-container" class="d-flex flex-column gap-3">
+                <div id="my-bookings-container" class="d-flex flex-column gap-3" role="region" aria-label="Movie reservations list">
                     <!-- Dynamic Booking Cards -->
                 </div>
 
                 <!-- Empty Bookings State -->
                 <div id="bookings-empty-state" class="d-none text-center py-5">
-                    <div class="cb-surface p-5 max-w-xl mx-auto">
-                        <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-tertiary mb-3 border border-cinebook">
+                    <div class="cb-surface p-4 p-md-5 max-w-xl mx-auto rounded-3 border border-cinebook shadow">
+                        <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-tertiary mb-3 border border-cinebook" style="width: 64px; height: 64px;">
                             <i class="bi bi-ticket-perforated text-cinebook-accent fs-1" aria-hidden="true"></i>
                         </div>
-                        <h2 class="h4 fw-bold text-white mb-2">You haven't booked any movies yet</h2>
-                        <p class="text-cinebook-secondary mb-4">
+                        <h2 class="h4 fw-bold text-white mb-2">No bookings yet</h2>
+                        <p class="text-cinebook-secondary fs-7 mb-4">
                             Explore currently screening blockbusters and secure your seats today.
                         </p>
-                        <button type="button" class="btn btn-cinebook-accent px-4 py-2" data-view="movies">
-                            <i class="bi bi-compass me-1" aria-hidden="true"></i> Explore Movies
+                        <button type="button" class="btn btn-cinebook-accent px-4 py-2 d-inline-flex align-items-center justify-content-center gap-2" data-view="movies" aria-label="Browse movie catalogue">
+                            <i class="bi bi-compass" aria-hidden="true"></i> Browse Movies
                         </button>
                     </div>
                 </div>
@@ -497,42 +497,62 @@
         <!-- 6. PROFILE VIEW -->
         <section id="profileView" class="spa-view d-none py-5" aria-label="User Profile">
             <div class="container py-4">
-                <div class="cb-surface p-4 p-md-5 mx-auto max-w-lg shadow">
+                <div class="cb-surface p-4 p-md-5 mx-auto max-w-lg shadow border border-cinebook rounded-3">
                     <div class="text-center mb-4 pb-3 border-bottom border-cinebook">
-                        <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-tertiary mb-3 border border-cinebook" style="width: 72px; height: 72px;">
-                            <span class="fs-4 fw-bold text-cinebook-accent" id="profile-avatar-initials">AM</span>
+                        <div class="d-inline-flex align-items-center justify-content-center p-3 rounded-circle bg-cinebook-tertiary mb-3 border border-cinebook profile-avatar-box" style="width: 76px; height: 76px;">
+                            <span class="fs-3 fw-bold text-cinebook-accent" id="profile-avatar-initials">AM</span>
                         </div>
                         <h1 class="h4 fw-bold text-white mb-1" id="profile-display-name">Alex Morgan</h1>
-                        <p class="text-cinebook-secondary fs-7 mb-0" id="profile-display-email">alex.morgan@cinebook.com</p>
+                        <p class="text-cinebook-secondary fs-7 mb-2" id="profile-display-email">alex.morgan@cinebook.com</p>
+                        <span class="badge bg-cinebook-tertiary text-cinebook-muted border border-cinebook fs-8">
+                            <i class="bi bi-person-badge me-1" aria-hidden="true"></i>Guest Account
+                        </span>
                     </div>
 
-                    <div class="d-flex flex-column gap-3 mb-4">
+                    <!-- Profile Statistics Summary -->
+                    <div class="row g-2 mb-4 text-center">
+                        <div class="col-4">
+                            <div class="p-3 rounded bg-cinebook-tertiary border border-cinebook h-100">
+                                <span class="fs-4 fw-bold text-white d-block" id="profile-total-bookings">0</span>
+                                <span class="fs-8 text-cinebook-muted text-uppercase fw-semibold">Total</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded bg-cinebook-tertiary border border-cinebook h-100">
+                                <span class="fs-4 fw-bold text-success d-block" id="profile-confirmed-bookings">0</span>
+                                <span class="fs-8 text-cinebook-muted text-uppercase fw-semibold">Confirmed</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 rounded bg-cinebook-tertiary border border-cinebook h-100">
+                                <span class="fs-4 fw-bold text-cinebook-secondary d-block" id="profile-cancelled-bookings">0</span>
+                                <span class="fs-8 text-cinebook-muted text-uppercase fw-semibold">Cancelled</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Details -->
+                    <div class="d-flex flex-column gap-2 mb-4">
                         <div class="d-flex justify-content-between align-items-center p-3 rounded bg-cinebook-tertiary border border-cinebook">
                             <div class="d-flex align-items-center gap-2 text-cinebook-secondary fs-7">
                                 <i class="bi bi-telephone text-cinebook-accent" aria-hidden="true"></i> Contact Phone
                             </div>
-                            <span class="text-white fs-7" id="profile-display-phone">+91 98765 43210</span>
+                            <span class="text-white fs-7 fw-medium" id="profile-display-phone">+91 98765 43210</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center p-3 rounded bg-cinebook-tertiary border border-cinebook">
                             <div class="d-flex align-items-center gap-2 text-cinebook-secondary fs-7">
                                 <i class="bi bi-geo-alt text-cinebook-accent" aria-hidden="true"></i> Preferred City
                             </div>
-                            <span class="text-white fs-7" id="profile-display-city">Mumbai</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center p-3 rounded bg-cinebook-tertiary border border-cinebook">
-                            <div class="d-flex align-items-center gap-2 text-cinebook-secondary fs-7">
-                                <i class="bi bi-ticket-perforated text-cinebook-accent" aria-hidden="true"></i> Total Bookings
-                            </div>
-                            <span class="badge bg-cinebook-surface text-white" id="profile-total-bookings">0</span>
+                            <span class="text-white fs-7 fw-medium" id="profile-display-city">Mumbai</span>
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-between gap-2">
-                        <button type="button" class="btn btn-cinebook-surface btn-sm px-3 py-2" data-view="home">
-                            <i class="bi bi-house-door me-1" aria-hidden="true"></i> Return Home
+                    <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 pt-2 border-top border-cinebook">
+                        <button type="button" class="btn btn-cinebook-surface btn-sm px-3 py-2 d-inline-flex align-items-center justify-content-center gap-2" data-view="home" aria-label="Return to homepage">
+                            <i class="bi bi-house-door" aria-hidden="true"></i> Return Home
                         </button>
-                        <button type="button" class="btn btn-cinebook-accent btn-sm px-3 py-2" id="btn-edit-profile-trigger">
-                            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Edit Profile
+                        <button type="button" class="btn btn-cinebook-accent btn-sm px-3 py-2 d-inline-flex align-items-center justify-content-center gap-2" id="btn-edit-profile-trigger" aria-label="Edit guest profile information">
+                            <i class="bi bi-pencil-square" aria-hidden="true"></i> Edit Profile
                         </button>
                     </div>
                 </div>
@@ -591,23 +611,38 @@
     <!-- 2. Cancel Booking Confirmation Modal -->
     <div class="modal fade" id="cancelBookingModal" tabindex="-1" aria-labelledby="cancelBookingModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title text-white h5" id="cancelBookingModalLabel">Cancel Booking</h2>
+            <div class="modal-content border border-cinebook">
+                <div class="modal-header border-bottom border-cinebook">
+                    <h2 class="modal-title text-white h5 d-flex align-items-center gap-2" id="cancelBookingModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill text-danger" aria-hidden="true"></i> Cancel Booking?
+                    </h2>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="text-center py-2">
-                        <i class="bi bi-exclamation-triangle text-warning fs-1 mb-2 d-block" aria-hidden="true"></i>
-                        <h3 class="text-white h6 mb-2">Are you sure you want to cancel this booking?</h3>
-                        <p class="text-cinebook-secondary fs-7 mb-0" id="cancel-modal-booking-info">
-                            Booking ID: CB-0000
-                        </p>
+                <div class="modal-body p-4">
+                    <p class="text-white mb-3">Are you sure you want to cancel this reservation?</p>
+                    
+                    <!-- Booking details preview box inside modal -->
+                    <div class="p-3 rounded bg-cinebook-tertiary border border-cinebook mb-3" id="cancel-modal-preview">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-cinebook">
+                            <span class="text-cinebook-muted fs-8">REFERENCE</span>
+                            <span class="badge bg-cinebook-surface text-white font-monospace fs-8" id="cancel-modal-ref">CB-000000</span>
+                        </div>
+                        <h4 class="h6 text-white fw-bold mb-1" id="cancel-modal-movie-title">Movie Title</h4>
+                        <div class="text-cinebook-secondary fs-8 mb-1" id="cancel-modal-schedule">Date • Showtime</div>
+                        <div class="text-cinebook-muted fs-8 mb-1" id="cancel-modal-theatre">Theatre Name</div>
+                        <div class="text-cinebook-muted fs-8" id="cancel-modal-seats">Seats: —</div>
+                    </div>
+
+                    <div class="alert alert-danger bg-danger-subtle text-danger border-0 p-2 fs-8 mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-info-circle flex-shrink-0" aria-hidden="true"></i>
+                        <span>This will mark the booking as cancelled. Your reserved seats will be released.</span>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-cinebook-surface" data-bs-dismiss="modal">Keep Booking</button>
-                    <button type="button" class="btn btn-danger" id="btn-confirm-cancel-booking">Confirm Cancellation</button>
+                <div class="modal-footer border-top border-cinebook">
+                    <button type="button" class="btn btn-cinebook-surface btn-sm px-3" data-bs-dismiss="modal">Keep Booking</button>
+                    <button type="button" class="btn btn-danger btn-sm px-3 d-inline-flex align-items-center gap-1" id="btn-confirm-cancel-booking">
+                        <i class="bi bi-x-circle" aria-hidden="true"></i> Cancel Booking
+                    </button>
                 </div>
             </div>
         </div>
@@ -616,37 +651,39 @@
     <!-- 3. Edit Profile Modal -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title text-white h5" id="editProfileModalLabel">Edit Profile</h2>
+            <div class="modal-content border border-cinebook">
+                <div class="modal-header border-bottom border-cinebook">
+                    <h2 class="modal-title text-white h5 d-flex align-items-center gap-2" id="editProfileModalLabel">
+                        <i class="bi bi-person-gear text-cinebook-accent" aria-hidden="true"></i> Edit Profile
+                    </h2>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="edit-profile-form" class="needs-validation" novalidate>
-                    <div class="modal-body">
+                    <div class="modal-body p-4">
                         <div class="mb-3">
-                            <label for="edit-profile-name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="edit-profile-name" required autocomplete="name">
-                            <div class="invalid-feedback">Name is required.</div>
+                            <label for="edit-profile-name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit-profile-name" required autocomplete="name" placeholder="Alex Morgan">
+                            <div class="invalid-feedback">Please enter your full name.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="edit-profile-email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="edit-profile-email" required autocomplete="email">
-                            <div class="invalid-feedback">Valid email is required.</div>
+                            <label for="edit-profile-email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="edit-profile-email" required autocomplete="email" placeholder="alex.morgan@cinebook.com">
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="edit-profile-phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="edit-profile-phone" required autocomplete="tel">
-                            <div class="invalid-feedback">Phone number is required.</div>
+                            <label for="edit-profile-phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="edit-profile-phone" pattern="^\+?[0-9\s-]{10,15}$" required autocomplete="tel" placeholder="+91 98765 43210">
+                            <div class="invalid-feedback">Please enter a valid contact phone number (10-15 digits).</div>
                         </div>
                         <div class="mb-3">
-                            <label for="edit-profile-city" class="form-label">Preferred City</label>
-                            <input type="text" class="form-control" id="edit-profile-city" required autocomplete="address-level2">
-                            <div class="invalid-feedback">City is required.</div>
+                            <label for="edit-profile-city" class="form-label">Preferred City <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit-profile-city" required autocomplete="address-level2" placeholder="Mumbai">
+                            <div class="invalid-feedback">Please enter your preferred city.</div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-cinebook-surface" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-cinebook-accent">Save Changes</button>
+                    <div class="modal-footer border-top border-cinebook">
+                        <button type="button" class="btn btn-cinebook-surface btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-cinebook-accent btn-sm px-4">Save Changes</button>
                     </div>
                 </form>
             </div>

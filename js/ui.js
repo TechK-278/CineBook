@@ -425,6 +425,19 @@ const UI = (function ($) {
         },
 
         /**
+         * Populate the cancellation confirmation modal with target booking info
+         * @param {Object} booking 
+         */
+        populateCancelModal: function (booking) {
+            if (!booking) return;
+            $('#cancel-modal-ref').text(booking.id);
+            $('#cancel-modal-movie-title').text(booking.movieTitle);
+            $('#cancel-modal-schedule').text(`${booking.date} • ${booking.showtime}`);
+            $('#cancel-modal-theatre').text(`${booking.theatre}${booking.screen ? ` (${booking.screen})` : ''}`);
+            $('#cancel-modal-seats').text(`Seats: ${Array.isArray(booking.seats) ? booking.seats.join(', ') : booking.seats}`);
+        },
+
+        /**
          * Render My Bookings List
          * @param {Array} bookings 
          */
@@ -442,39 +455,49 @@ const UI = (function ($) {
             const html = bookings.map(b => {
                 const isConfirmed = b.status === 'Confirmed';
                 const safeTitle = escapeHtml(b.movieTitle);
-                const statusBadge = isConfirmed ? 
-                    `<span class="badge bg-success text-white"><i class="bi bi-check-circle me-1" aria-hidden="true"></i>Confirmed</span>` :
-                    `<span class="badge bg-secondary text-white"><i class="bi bi-x-circle me-1" aria-hidden="true"></i>Cancelled</span>`;
+                const safeTheatre = escapeHtml(b.theatre);
+                const safeScreen = b.screen ? escapeHtml(b.screen) : '';
+                const seatsText = Array.isArray(b.seats) ? b.seats.join(', ') : (b.seats || '');
+                const ticketCount = Array.isArray(b.seats) ? b.seats.length : 1;
 
-                const cancelBtn = isConfirmed ? 
-                    `<button type="button" class="btn btn-cinebook-surface btn-sm text-danger border-danger-subtle btn-trigger-cancel" data-booking-id="${b.id}" aria-label="Cancel booking ${b.id}">Cancel Booking</button>` :
-                    `<span class="fs-8 text-cinebook-muted">Cancelled on ${new Date(b.cancelledAt || b.bookingDate).toLocaleDateString()}</span>`;
+                const statusBadge = isConfirmed ? 
+                    `<span class="badge badge-status-confirmed d-inline-flex align-items-center gap-1"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Confirmed</span>` :
+                    `<span class="badge badge-status-cancelled d-inline-flex align-items-center gap-1"><i class="bi bi-x-circle-fill" aria-hidden="true"></i> Cancelled</span>`;
+
+                const cancelAction = isConfirmed ? 
+                    `<button type="button" class="btn btn-cinebook-surface btn-sm text-danger border-danger-subtle btn-trigger-cancel px-3 py-1" data-booking-id="${b.id}" aria-label="Cancel reservation ${b.id} for ${safeTitle}"><i class="bi bi-x-circle me-1" aria-hidden="true"></i>Cancel Booking</button>` :
+                    `<span class="badge bg-cinebook-tertiary text-cinebook-muted border border-cinebook fs-8 py-1 px-2"><i class="bi bi-clock-history me-1" aria-hidden="true"></i>Cancelled on ${new Date(b.cancelledAt || b.bookingDate).toLocaleDateString()}</span>`;
 
                 return `
-                    <div class="cb-card p-3 p-md-4">
-                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <img src="${b.poster}" alt="${safeTitle}" class="rounded border border-cinebook" style="width: 60px; height: 80px; object-fit: cover;" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
-                                <div>
-                                    <div class="d-flex align-items-center gap-2 mb-1">
-                                        <span class="font-monospace text-cinebook-muted fs-8">${b.id}</span>
+                    <div class="booking-card ${isConfirmed ? '' : 'is-cancelled'} p-3 p-md-4">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                            <div class="d-flex align-items-start gap-3 flex-grow-1">
+                                <img src="${b.poster}" alt="${safeTitle}" class="booking-movie-poster" onerror="this.onerror=null;this.src='${FALLBACK_POSTER}';">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                        <span class="badge bg-cinebook-tertiary text-white border border-cinebook font-monospace fs-8">${b.id}</span>
                                         ${statusBadge}
                                     </div>
-                                    <h5 class="text-white mb-1 fw-bold">${safeTitle}</h5>
-                                    <p class="text-cinebook-secondary fs-8 mb-0">
-                                        <i class="bi bi-geo-alt me-1" aria-hidden="true"></i>${escapeHtml(b.theatre)} • ${b.date} • ${b.showtime}
+                                    <h2 class="h5 text-white mb-1 fw-bold">${safeTitle}</h2>
+                                    <p class="text-cinebook-secondary fs-8 mb-1">
+                                        <i class="bi bi-geo-alt text-cinebook-accent me-1" aria-hidden="true"></i>${safeTheatre}${safeScreen ? ` • ${safeScreen}` : ''}
                                     </p>
-                                    <p class="text-cinebook-muted fs-8 mb-0">
-                                        Seats: <span class="text-cinebook-accent fw-semibold">${b.seats.join(', ')}</span> (${b.seats.length} Tickets)
+                                    <p class="text-cinebook-muted fs-8 mb-1">
+                                        <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>${b.date} • <i class="bi bi-clock ms-1 me-1" aria-hidden="true"></i>${b.showtime}
+                                    </p>
+                                    <p class="text-cinebook-secondary fs-8 mb-0">
+                                        Seats: <span class="text-cinebook-accent fw-bold">${seatsText}</span> <span class="text-cinebook-muted">(${ticketCount} ${ticketCount === 1 ? 'Ticket' : 'Tickets'})</span>
                                     </p>
                                 </div>
                             </div>
-                            <div class="d-flex flex-row flex-md-column justify-content-between align-items-end gap-2 pt-2 pt-md-0 border-top border-md-0 border-cinebook">
-                                <div class="text-end">
-                                    <span class="text-cinebook-muted fs-8 d-block">Amount</span>
-                                    <span class="fw-bold text-white fs-6">₹${b.totalAmount}</span>
+                            <div class="d-flex flex-row flex-md-column justify-content-between align-items-end gap-2 w-100 w-md-auto pt-3 pt-md-0 border-top border-md-0 border-cinebook">
+                                <div class="text-start text-md-end">
+                                    <span class="text-cinebook-muted fs-8 d-block">Amount Paid</span>
+                                    <span class="fw-bold ${isConfirmed ? 'text-white' : 'text-cinebook-muted'} fs-5">₹${b.totalAmount}</span>
                                 </div>
-                                ${cancelBtn}
+                                <div class="mt-md-1">
+                                    ${cancelAction}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -487,31 +510,53 @@ const UI = (function ($) {
         /**
          * Render Profile View and Navigation Profile badge
          * @param {Object} profile 
-         * @param {number} bookingsCount 
+         * @param {Array|number} bookings 
          */
-        renderProfile: function (profile, bookingsCount = 0) {
+        renderProfile: function (profile, bookings = []) {
             if (!profile) return;
-            const initials = profile.avatar || profile.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+            const initials = profile.avatar || (profile.name ? profile.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AM');
+
+            let totalCount = 0;
+            let confirmedCount = 0;
+            let cancelledCount = 0;
+
+            if (Array.isArray(bookings)) {
+                totalCount = bookings.length;
+                confirmedCount = bookings.filter(b => b.status === 'Confirmed').length;
+                cancelledCount = bookings.filter(b => b.status === 'Cancelled').length;
+            } else if (typeof bookings === 'number') {
+                totalCount = bookings;
+                const storedBookings = Storage.getBookings();
+                confirmedCount = storedBookings.filter(b => b.status === 'Confirmed').length;
+                cancelledCount = storedBookings.filter(b => b.status === 'Cancelled').length;
+            } else {
+                const storedBookings = Storage.getBookings();
+                totalCount = storedBookings.length;
+                confirmedCount = storedBookings.filter(b => b.status === 'Confirmed').length;
+                cancelledCount = storedBookings.filter(b => b.status === 'Cancelled').length;
+            }
 
             $('#profile-avatar-initials').text(initials);
-            $('#profile-display-name').text(profile.name);
-            $('#profile-display-email').text(profile.email);
-            $('#profile-display-phone').text(profile.phone);
-            $('#profile-display-city').text(profile.city);
-            $('#profile-total-bookings').text(bookingsCount);
+            $('#profile-display-name').text(profile.name || 'Guest User');
+            $('#profile-display-email').text(profile.email || '—');
+            $('#profile-display-phone').text(profile.phone || '—');
+            $('#profile-display-city').text(profile.city || '—');
+            $('#profile-total-bookings').text(totalCount);
+            $('#profile-confirmed-bookings').text(confirmedCount);
+            $('#profile-cancelled-bookings').text(cancelledCount);
 
-            $('#nav-profile-name').text(profile.name.split(' ')[0]);
+            $('#nav-profile-name').text(profile.name ? profile.name.split(' ')[0] : 'Guest');
 
             // Pre-fill edit modal form
-            $('#edit-profile-name').val(profile.name);
-            $('#edit-profile-email').val(profile.email);
-            $('#edit-profile-phone').val(profile.phone);
-            $('#edit-profile-city').val(profile.city);
+            $('#edit-profile-name').val(profile.name || '');
+            $('#edit-profile-email').val(profile.email || '');
+            $('#edit-profile-phone').val(profile.phone || '');
+            $('#edit-profile-city').val(profile.city || '');
 
             // Pre-fill customer form in booking
-            $('#cust-name').val(profile.name);
-            $('#cust-email').val(profile.email);
-            $('#cust-phone').val(profile.phone);
+            $('#cust-name').val(profile.name || '');
+            $('#cust-email').val(profile.email || '');
+            $('#cust-phone').val(profile.phone || '');
         },
 
         /**

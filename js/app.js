@@ -112,7 +112,7 @@ const CineBook = (function ($) {
             case 'profile': {
                 const profile = Storage.getProfile();
                 const bookings = Storage.getBookings();
-                UI.renderProfile(profile, bookings.length);
+                UI.renderProfile(profile, bookings);
                 break;
             }
             default:
@@ -245,7 +245,7 @@ const CineBook = (function ($) {
 
         // Update profile stats and render confirmation
         const profile = Storage.getProfile();
-        UI.renderProfile(profile, Storage.getBookings().length);
+        UI.renderProfile(profile, Storage.getBookings());
         UI.renderConfirmation(bookingObj);
         UI.showToast(`Booking ${bookingId} confirmed successfully!`, 'success');
 
@@ -428,8 +428,13 @@ const CineBook = (function ($) {
 
         // Cancellation Modal Trigger
         $(document).on('click', '.btn-trigger-cancel', function () {
-            appState.cancellingBookingId = $(this).data('booking-id');
-            $('#cancel-modal-booking-info').text(`Booking Reference: ${appState.cancellingBookingId}`);
+            const bookingId = $(this).data('booking-id');
+            const booking = Storage.getBookingById(bookingId);
+            if (!booking) return;
+
+            appState.cancellingBookingId = bookingId;
+            UI.populateCancelModal(booking);
+
             const modalEl = document.getElementById('cancelBookingModal');
             if (modalEl) {
                 const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -440,7 +445,8 @@ const CineBook = (function ($) {
         // Confirm Cancellation in Modal
         $('#btn-confirm-cancel-booking').on('click', function () {
             if (!appState.cancellingBookingId) return;
-            const success = Storage.cancelBooking(appState.cancellingBookingId);
+            const targetId = appState.cancellingBookingId;
+            const success = Storage.cancelBooking(targetId);
             const modalEl = document.getElementById('cancelBookingModal');
             if (modalEl) {
                 const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -450,23 +456,38 @@ const CineBook = (function ($) {
             }
 
             if (success) {
-                UI.showToast(`Booking ${appState.cancellingBookingId} cancelled.`, 'info');
+                UI.showToast(`Booking ${targetId} cancelled successfully.`, 'info');
                 const bookings = Storage.getBookings();
                 UI.renderBookingsList(bookings);
-                UI.renderProfile(Storage.getProfile(), bookings.length);
+                UI.renderProfile(Storage.getProfile(), bookings);
             }
+            appState.cancellingBookingId = null;
+        });
+
+        // Cancellation Modal Dismissal: safely reset pending cancellation state
+        $('#cancelBookingModal').on('hidden.bs.modal', function () {
             appState.cancellingBookingId = null;
         });
 
         // Edit Profile Modal Trigger
         $('#btn-edit-profile-trigger').on('click', function () {
             const profile = Storage.getProfile();
-            UI.renderProfile(profile, Storage.getBookings().length);
+            UI.renderProfile(profile, Storage.getBookings());
             const modalEl = document.getElementById('editProfileModal');
             if (modalEl) {
                 const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
                 modalInstance.show();
             }
+        });
+
+        // Edit Profile Modal Dismissal: reset form validation and revert uncommitted edits
+        $('#editProfileModal').on('hidden.bs.modal', function () {
+            $('#edit-profile-form').removeClass('was-validated');
+            const profile = Storage.getProfile();
+            $('#edit-profile-name').val(profile.name || '');
+            $('#edit-profile-email').val(profile.email || '');
+            $('#edit-profile-phone').val(profile.phone || '');
+            $('#edit-profile-city').val(profile.city || '');
         });
 
         // Save Profile Form Submission
@@ -493,7 +514,7 @@ const CineBook = (function ($) {
 
             Storage.saveProfile(updatedProfile);
             const bookings = Storage.getBookings();
-            UI.renderProfile(updatedProfile, bookings.length);
+            UI.renderProfile(updatedProfile, bookings);
 
             const modalEl = document.getElementById('editProfileModal');
             if (modalEl) {
@@ -532,7 +553,7 @@ const CineBook = (function ($) {
 
         const profile = Storage.getProfile();
         const bookings = Storage.getBookings();
-        UI.renderProfile(profile, bookings.length);
+        UI.renderProfile(profile, bookings);
         UI.renderBookingsList(bookings);
 
         // Register event listeners

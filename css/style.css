@@ -814,7 +814,61 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 /* ==========================================================================
-   10. Layout & Footer
+   10. My Bookings & Profile Custom Components
+   ========================================================================== */
+.booking-card {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.booking-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.booking-card.is-cancelled {
+    border: 1px dashed var(--border-subtle);
+    background-color: rgba(21, 21, 27, 0.7);
+    opacity: 0.88;
+}
+
+.booking-card.is-cancelled .booking-movie-poster {
+    filter: grayscale(40%);
+}
+
+.booking-movie-poster {
+    width: 68px;
+    height: 92px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.badge-status-confirmed {
+    background-color: rgba(40, 167, 69, 0.15);
+    color: #4cd964;
+    border: 1px solid rgba(40, 167, 69, 0.35);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-status-cancelled {
+    background-color: rgba(108, 117, 125, 0.2);
+    color: var(--text-muted);
+    border: 1px solid rgba(108, 117, 125, 0.4);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.profile-avatar-box {
+    box-shadow: 0 0 16px var(--accent-glow);
+}
+
+/* ==========================================================================
+   11. Layout & Footer
    ========================================================================== */
 .app-viewport {
     flex: 1 0 auto;
