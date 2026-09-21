@@ -178,12 +178,12 @@
                     <!-- Search & Sort Controls -->
                     <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
                         <div class="input-group input-group-sm" style="min-width: 260px;">
-                            <span class="input-group-text bg-cinebook-surface border-cinebook text-cinebook-muted">
+                            <span class="input-group-text bg-cinebook-surface border-cinebook text-cinebook-muted" id="catalog-search-addon">
                                 <i class="bi bi-search" aria-hidden="true"></i>
                             </span>
-                            <input type="text" id="catalog-search-input" class="form-control border-cinebook" placeholder="Search movies, genres or languages..." aria-label="Search movie catalogue">
-                            <button class="btn btn-cinebook-surface border-cinebook d-none" id="catalog-search-clear" type="button" aria-label="Clear search input">
-                                <i class="bi bi-x" aria-hidden="true"></i>
+                            <input type="search" id="catalog-search-input" class="form-control border-cinebook" placeholder="Search movies, genres or languages..." aria-label="Search movies, genres or languages" aria-describedby="catalog-search-addon" autocomplete="off">
+                            <button class="btn btn-cinebook-surface border-cinebook d-none" id="catalog-search-clear" type="button" aria-label="Clear search query">
+                                <i class="bi bi-x-lg fs-7" aria-hidden="true"></i>
                             </button>
                         </div>
 
@@ -193,7 +193,7 @@
                                 <option value="popularity">Popularity</option>
                                 <option value="rating">Rating: High to Low</option>
                                 <option value="title">Title: A to Z</option>
-                                <option value="newest">Release Date — Newest</option>
+                                <option value="newest">Release Date: Newest</option>
                             </select>
                         </div>
                     </div>
@@ -202,15 +202,15 @@
                 <!-- Genre Filter Pills & Results Count -->
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                     <div class="d-flex flex-nowrap overflow-x-auto align-items-center gap-2 pb-2 pb-md-0 filter-pills-scroll" id="genre-filter-container" role="toolbar" aria-label="Filter movies by genre">
-                        <button type="button" class="btn-filter-pill active" data-genre="All">All</button>
-                        <button type="button" class="btn-filter-pill" data-genre="Action">Action</button>
-                        <button type="button" class="btn-filter-pill" data-genre="Drama">Drama</button>
-                        <button type="button" class="btn-filter-pill" data-genre="Comedy">Comedy</button>
-                        <button type="button" class="btn-filter-pill" data-genre="Thriller">Thriller</button>
-                        <button type="button" class="btn-filter-pill" data-genre="Sci-Fi">Sci-Fi</button>
-                        <button type="button" class="btn-filter-pill" data-genre="Animation">Animation</button>
+                        <button type="button" class="btn-filter-pill active" data-genre="All" aria-pressed="true">All</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Action" aria-pressed="false">Action</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Drama" aria-pressed="false">Drama</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Comedy" aria-pressed="false">Comedy</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Thriller" aria-pressed="false">Thriller</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Sci-Fi" aria-pressed="false">Sci-Fi</button>
+                        <button type="button" class="btn-filter-pill" data-genre="Animation" aria-pressed="false">Animation</button>
                     </div>
-                    <div class="text-cinebook-muted fs-7 text-nowrap" id="movies-results-count">
+                    <div class="text-cinebook-muted fs-7 text-nowrap" id="movies-results-count" aria-live="polite" aria-atomic="true">
                         12 movies available
                     </div>
                 </div>
@@ -221,12 +221,12 @@
                 </div>
 
                 <!-- Empty Search/Filter State -->
-                <div id="movies-empty-state" class="d-none text-center py-5 my-4">
+                <div id="movies-empty-state" class="d-none text-center py-5 my-4" role="status" aria-live="polite">
                     <div class="p-4 p-md-5 cb-surface max-w-md mx-auto">
                         <i class="bi bi-film text-cinebook-muted fs-1 mb-3 d-block" aria-hidden="true"></i>
                         <h2 class="text-white h5 mb-2">No movies found</h2>
                         <p class="text-cinebook-secondary fs-7 mb-4">Try another title, genre or language.</p>
-                        <button type="button" class="btn btn-cinebook-accent btn-sm px-4 py-2" id="btn-reset-filters">
+                        <button type="button" class="btn btn-cinebook-accent btn-sm px-4 py-2" id="btn-reset-filters" aria-label="Clear all active filters and search queries">
                             Clear Filters
                         </button>
                     </div>

@@ -269,10 +269,21 @@ const CineBook = (function ($) {
             }
         });
 
+        // Search inputs keyboard accessibility (Escape to clear)
+        $('#catalog-search-input, #navbar-search-input').on('keydown', function (e) {
+            if (e.key === 'Escape' && $(this).val()) {
+                e.preventDefault();
+                appState.filter.search = '';
+                $('#catalog-search-input, #navbar-search-input').val('');
+                applyCatalogueFilters();
+            }
+        });
+
         // Clear search input button
         $('#catalog-search-clear').on('click', function () {
             appState.filter.search = '';
             $('#catalog-search-input, #navbar-search-input').val('');
+            $('#catalog-search-input').trigger('focus');
             applyCatalogueFilters();
         });
 
@@ -283,8 +294,8 @@ const CineBook = (function ($) {
             appState.filter.sort = 'popularity';
             $('#catalog-search-input, #navbar-search-input').val('');
             $('#catalog-sort-select').val('popularity');
-            $('.btn-filter-pill').removeClass('active');
-            $('.btn-filter-pill[data-genre="All"]').addClass('active');
+            $('.btn-filter-pill').removeClass('active').attr('aria-pressed', 'false');
+            $('.btn-filter-pill[data-genre="All"]').addClass('active').attr('aria-pressed', 'true');
             applyCatalogueFilters();
         });
 
@@ -292,8 +303,8 @@ const CineBook = (function ($) {
         $('#genre-filter-container').on('click', '.btn-filter-pill', function () {
             const genre = $(this).data('genre');
             appState.filter.genre = genre;
-            $('.btn-filter-pill').removeClass('active');
-            $(this).addClass('active');
+            $('.btn-filter-pill').removeClass('active').attr('aria-pressed', 'false');
+            $(this).addClass('active').attr('aria-pressed', 'true');
             applyCatalogueFilters();
         });
 
