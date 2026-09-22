@@ -9,7 +9,23 @@ export type MovieCertificate = "U" | "UA" | "UA 13+" | "UA 16+" | "A";
 
 export type SeatTier = "Standard" | "Premium" | "Recliner";
 
-export type SeatStatus = "available" | "held" | "booked";
+export type SeatStatus = "AVAILABLE" | "LOCKED" | "BOOKED" | "BLOCKED" | "available" | "held" | "locked" | "booked" | "blocked";
+
+export type UiSeatState =
+  | "available"
+  | "selected"
+  | "locked_by_me"
+  | "locked_by_other"
+  | "booked"
+  | "blocked";
+
+export interface SeatLockResult {
+  success: boolean;
+  lockedSeats?: ShowSeat[];
+  expiresAt?: string;
+  expiresInSeconds?: number;
+  error?: string;
+}
 
 export type BookingStatus = "pending" | "confirmed" | "cancelled" | "expired";
 
@@ -121,6 +137,8 @@ export interface ShowSeat {
   showId: string;
   seatId: string;
   status: SeatStatus;
+  lockedBy?: string | null;
+  lockExpiresAt?: string | null;
   heldUntil?: string | null;
   heldByUserId?: string | null;
   seat?: Seat;

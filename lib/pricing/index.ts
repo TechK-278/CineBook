@@ -34,6 +34,66 @@ export function calculatePricing(unitPrice: number, seatCount: number): PricingB
 }
 
 /**
+ * Calculate pricing for a collection of seats with individual tier multipliers
+ */
+export function calculateSeatsPricing(
+  basePrice: number,
+  seats: Array<{ tier?: string; priceMultiplier?: number }>
+): PricingBreakdown & {
+  tierBreakdown: Array<{ tier: string; count: number; unitPrice: number; subtotal: number }>;
+} {
+  const safeBase = Math.max(0, Number(basePrice) || 0);
+  const count = seats.length;
+
+  if (count === 0) {
+    return {
+      unitPrice: safeBase,
+      seatCount: 0,
+      subtotal: 0,
+      convenienceFee: 0,
+      grandTotal: 0,
+      tierBreakdown: [],
+    };
+  }
+
+  // Calculate tier subtotals
+  const tierMap = new Map<string, { count: number; unitPrice: number; subtotal: number }>();
+  let subtotal = 0;
+
+  seats.forEach((seat) => {
+    const tier = seat.tier || "Standard";
+    const multiplier = Number(seat.priceMultiplier) || (tier === "Recliner" ? 1.5 : tier === "Premium" ? 1.2 : 1.0);
+    const unitPrice = Math.round(safeBase * multiplier);
+    subtotal += unitPrice;
+
+    if (!tierMap.has(tier)) {
+      tierMap.set(tier, { count: 0, unitPrice, subtotal: 0 });
+    }
+    const entry = tierMap.get(tier)!;
+    entry.count += 1;
+    entry.subtotal += unitPrice;
+  });
+
+  const convenienceFee = Math.round(subtotal * CONVENIENCE_FEE_RATE);
+  const grandTotal = subtotal + convenienceFee;
+  const avgUnitPrice = Math.round(subtotal / count);
+
+  return {
+    unitPrice: avgUnitPrice,
+    seatCount: count,
+    subtotal,
+    convenienceFee,
+    grandTotal,
+    tierBreakdown: Array.from(tierMap.entries()).map(([tier, data]) => ({
+      tier,
+      count: data.count,
+      unitPrice: data.unitPrice,
+      subtotal: data.subtotal,
+    })),
+  };
+}
+
+/**
  * Format currency in Indian Rupee format (₹)
  * @param amount 
  * @returns string (e.g. "₹358")

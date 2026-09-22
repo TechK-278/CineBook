@@ -8,4 +8,6 @@ export * from "./status";
 export * from "./theatres";
 export * from "./screens";
 export * from "./shows";
+export * from "./show-seats";
+export * from "./show-utils";
 export * from "./movies";

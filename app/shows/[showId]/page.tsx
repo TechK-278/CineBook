@@ -153,7 +153,7 @@ export default async function ShowDetailsPage({ params }: ShowDetailsPageProps) 
             </div>
           </div>
 
-          {/* Phase 5 Callout */}
+          {/* Seat Selection Callout */}
           <div className="rounded-2xl border border-cinebook-accent/40 bg-cinebook-accent/10 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-sm font-bold text-white">
@@ -161,17 +161,19 @@ export default async function ShowDetailsPage({ params }: ShowDetailsPageProps) 
                 Interactive Seat Selection
               </div>
               <p className="text-xs text-zinc-300 leading-relaxed max-w-lg">
-                Auditorium seat-map selection, tier selection (Recliner, Premium, Standard), and real-time seat locking are coming in <strong>Phase 5</strong>.
+                Choose your favorite seats across Luxury Recliners, Prime View, and Standard tiers with real-time availability.
               </p>
             </div>
 
-            <Button
-              size="sm"
-              className="gap-1.5 font-semibold text-xs shrink-0 cursor-default opacity-90 shadow-md"
-            >
-              <Ticket className="h-3.5 w-3.5" />
-              Select Seats (Phase 5)
-            </Button>
+            <Link href={`/shows/${show.id}/seats`} className="shrink-0">
+              <Button
+                size="sm"
+                className="gap-1.5 font-bold text-xs shadow-lg"
+              >
+                <Ticket className="h-3.5 w-3.5" />
+                Select Seats
+              </Button>
+            </Link>
           </div>
 
           {/* Amenities and Cancellation info */}
