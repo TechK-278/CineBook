@@ -213,9 +213,10 @@ export function SeatSelectionClient({
     }
   };
 
-  // Proceed to Phase 6 Checkout Handoff
+  // Proceed to Checkout
   const handleProceedToCheckout = () => {
-    setShowCheckoutModal(true);
+    const seatCodes = selectedShowSeats.map((s) => s.seat?.seatCode || s.seatId).join(",");
+    router.push(`/checkout/${show.id}?seats=${encodeURIComponent(seatCodes)}`);
   };
 
   // Derived selected show seats with complete metadata

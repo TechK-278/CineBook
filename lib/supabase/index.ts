@@ -11,3 +11,4 @@ export * from "./shows";
 export * from "./show-seats";
 export * from "./show-utils";
 export * from "./movies";
+export * from "./bookings";
